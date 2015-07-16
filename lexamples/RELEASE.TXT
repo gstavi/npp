@@ -1,0 +1,13 @@
+TRUNK
+-----
+Makefile lexer
+* Fix parsing of $$ at the beginning of recipe.
+* Allow treating $$ as variable start. Enabled by default.
+* Highlight all vars in: [un]export VAR1 VAR2 VAR3
+* Support for pattern specific variables values. E.g. TARGET: private VAR = VALUE.
+
+Mib lexer
+* Highlight 'STRING' of 'OCTET STRING' in SEQUENCE.
+
+
+Version 1.0.0 - Initial release

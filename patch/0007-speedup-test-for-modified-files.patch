@@ -1,0 +1,81 @@
+From 0bc9617d0c628d1ec9f40f8b2e8a790af46389b5 Mon Sep 17 00:00:00 2001
+From: gstavi <gur.stavi@gmail.com>
+Date: Wed, 15 Jul 2015 16:27:50 +0300
+Subject: [PATCH 07/12] speedup test for modified files
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------2.4.5"
+
+This is a multi-part message in MIME format.
+--------------2.4.5
+Content-Type: text/plain; charset=UTF-8; format=fixed
+Content-Transfer-Encoding: 8bit
+
+
+diff --git a/PowerEditor/src/Parameters.cpp b/PowerEditor/src/Parameters.cpp
+index ad88aee..42d329f 100644
+--- a/PowerEditor/src/Parameters.cpp
++++ b/PowerEditor/src/Parameters.cpp
+@@ -6381,7 +6381,25 @@ void NppParameters::addScintillaModifiedIndex(int index)
+ 
+ void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirection)
+ {
+-	HMODULE kernel = GetModuleHandle(TEXT("kernel32"));
++    typedef BOOL (WINAPI *LPFN_WOW64ENABLEWOW64FSREDIRECTION)(BOOL);
++    static LPFN_WOW64ENABLEWOW64FSREDIRECTION Wow64EnableWow64FsRedirectionFunc = NULL;
++    static int FirstTime = 1;
++    HMODULE kernel;
++
++	/*
++	 * Gur: speed optimization so we don't lookup kernel32 again and again.
++	 * This is called during the process of checking if files were modified
++	 * outside Notepad++.
++	 */
++	 if (!FirstTime)
++	 {
++		if (Wow64EnableWow64FsRedirectionFunc != NULL)
++			Wow64EnableWow64FsRedirectionFunc(Wow64FsEnableRedirection);
++		return;
++	}
++
++	FirstTime = 0;
++	kernel = GetModuleHandle(TEXT("kernel32"));
+ 	if (kernel)
+ 	{
+ 		BOOL isWow64 = FALSE;
+@@ -6394,8 +6412,7 @@ void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirect
+ 
+ 			if (isWow64)
+ 			{
+-				typedef BOOL (WINAPI *LPFN_WOW64ENABLEWOW64FSREDIRECTION)(BOOL);
+-				LPFN_WOW64ENABLEWOW64FSREDIRECTION Wow64EnableWow64FsRedirectionFunc = (LPFN_WOW64ENABLEWOW64FSREDIRECTION)GetProcAddress(kernel, "Wow64EnableWow64FsRedirection");
++				Wow64EnableWow64FsRedirectionFunc = (LPFN_WOW64ENABLEWOW64FSREDIRECTION)GetProcAddress(kernel, "Wow64EnableWow64FsRedirection");
+ 				if (Wow64EnableWow64FsRedirectionFunc)
+ 				{
+ 					Wow64EnableWow64FsRedirectionFunc(Wow64FsEnableRedirection);
+diff --git a/PowerEditor/src/ScitillaComponent/Buffer.cpp b/PowerEditor/src/ScitillaComponent/Buffer.cpp
+index a418be1..cf20e52 100644
+--- a/PowerEditor/src/ScitillaComponent/Buffer.cpp
++++ b/PowerEditor/src/ScitillaComponent/Buffer.cpp
+@@ -156,7 +156,17 @@ void Buffer::setFileName(const TCHAR *fn, LangType defaultLang)
+ bool Buffer::checkFileState() {	//returns true if the status has been changed (it can change into DOC_REGULAR too). false otherwise
+ 	struct _stat buf;
+ 
+- 	if (_currentStatus == DOC_UNNAMED)	//unsaved document cannot change by environment
++	/* Gur: speed optimization.
++	 * Optimistic approach - try to finish as quickly as possible */
++	if (_currentStatus == DOC_REGULAR)
++	{
++		int err;
++		err = generic_stat(_fullPathName.c_str(), &buf);
++		if (!err && _timeStamp == buf.st_mtime)
++			return false;
++	}
++
++	if (_currentStatus == DOC_UNNAMED)	//unsaved document cannot change by environment
+ 		return false;
+ 
+ 	bool isWow64Off = false;
+
+--------------2.4.5--
+
+

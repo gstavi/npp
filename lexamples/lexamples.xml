@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<NotepadPlus>
+    <Languages>
+        <Language name="Make" ext="mak" tabSettings="4" />
+        <Language name="Mib" ext="mib" />
+    </Languages>
+    <LexerStyles>
+        <LexerType name="Make" desc="Make" excluded="no">
+            <WordsStyle name="DEFAULT" styleID="0" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="COMMENT" styleID="1" fgColor="187018" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="PREPROCESSOR" styleID="2" fgColor="008040" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="VARIABLE" styleID="3" fgColor="3030FF" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="OPERATOR" styleID="4" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TARGET" styleID="5" fgColor="A00000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TARGET PATTERN" styleID="6" fgColor="A00000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="ERROR" styleID="9" fgColor="000000" bgColor="80FFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="PREREQUISITE" styleID="10" fgColor="D06000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="PREREQ-PATTERN" styleID="11" fgColor="D06000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="RECIPE LINE" styleID="12" fgColor="600060" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="DIRECTIVE" styleID="13" fgColor="6000C0" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="FUNCTION" styleID="14" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="ASSIGN DST" styleID="15" fgColor="30B080" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="ASSIGN SRC" styleID="16" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="EOL CONT ERR" styleID="17" fgColor="FFFF00" bgColor="FF0000" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="UNTERMINATED" styleID="18" fgColor="000000" bgColor="FFD0D0" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="FUNC IN UNTER" styleID="19" fgColor="000000" bgColor="FFD0D0" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="VPATH PATTERN" styleID="20" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="IMCLUDE FILE" styleID="21" fgColor="808080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="PREPROC DIRECTIVE" styleID="22" fgColor="008040" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+        </LexerType>
+        <LexerType name="Mib" desc="Mib" ext="mib">
+            <WordsStyle name="DEFAULT" styleID="0" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="COMMENT" styleID="1" fgColor="007F00" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="IDENTIFIER" styleID="2" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="STRING" styleID="3" fgColor="7F007F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="OID" styleID="4" fgColor="007F7F" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="NUMBER" styleID="5" fgColor="7F0000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="KEYWORD" styleID="6" fgColor="00007F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="ATTRIBUTE" styleID="7" fgColor="F07800" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="DESCRIPTOR" styleID="8" fgColor="00007F" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TYPE" styleID="9" fgColor="006030" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="OPERATOR" styleID="10" fgColor="222222" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="OID BASE" styleID="11" fgColor="104080" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="IMPORT MIB" styleID="12" fgColor="909000" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="CASE ERROR" styleID="13" fgColor="FFFF00" bgColor="FF0000" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="ENUM" styleID="14" fgColor="D020D0" bgColor="FFFFFF" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle name="TABLE NAME" styleID="15" fgColor="A04000" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+            <WordsStyle name="MACRO NAME" styleID="16" fgColor="D00040" bgColor="FFFFFF" fontName="" fontStyle="1" fontSize="" />
+        </LexerType>
+    </LexerStyles>
+</NotepadPlus>
+
