@@ -28,7 +28,7 @@ RES_FILES := \
 PRE_COMP_HDR = $(SRCDIR)/src/MISC/Common/precompiledHeaders.h
 PRE_COMP_FILE_NAME = precompiledHeaders.h
 
-DBG_INFO_CFLAGS = /Zi
+DBG_INFO_CFLAGS = /Zi /Fd$(OUTDIR)/
 PCH_CFLAGS_precompiledHeaders_h = $$(PCH_CREATE_CFLAGS) /TP
 PCH_CFLAGS_cpp = $$(PCH_USE_CFLAGS)
 PCH_CFLAGS_c =

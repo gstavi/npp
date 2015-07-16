@@ -12,7 +12,7 @@ DEP_MAKES = $(MAIN_DIR)boost_regex.mak
 
 VPATH = $(SRCDIR)/src $(SRCDIR)/lexlib $(SRCDIR)/win32 $(SRCDIR)/boostregex
 SRC_FILES = Accessor.cxx Catalogue.cxx ExternalLexer.cxx LexerBase.cxx \
-	LexCommon.cxx LexerModule.cxx LexerSimple.cxx ScintillaWin.cxx \
+	LexerModule.cxx LexerSimple.cxx ScintillaWin.cxx \
 	ScintillaBase.cxx StyleContext.cxx WordList.cxx AutoComplete.cxx \
 	CallTip.cxx CellBuffer.cxx CharacterSet.cxx CharClassify.cxx \
 	ContractionState.cxx Decoration.cxx Document.cxx Editor.cxx KeyMap.cxx \
