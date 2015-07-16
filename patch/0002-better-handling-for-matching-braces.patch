@@ -1,7 +1,7 @@
-From 2b089e2d79d906e8b66179265282adfa867b7c20 Mon Sep 17 00:00:00 2001
+From 15bc1e44c4941ef6ce28a9b9cf3277e1915e18f4 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 15:58:55 +0300
-Subject: [PATCH 02/12] better handling for matching braces
+Subject: [PATCH 02/10] better handling for matching braces
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.4.5"
 
@@ -12,10 +12,10 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Notepad_plus.cpp b/PowerEditor/src/Notepad_plus.cpp
-index 3285ef4..82dabff 100644
+index d1ba610..79d290e 100644
 --- a/PowerEditor/src/Notepad_plus.cpp
 +++ b/PowerEditor/src/Notepad_plus.cpp
-@@ -2045,29 +2045,27 @@ void Notepad_plus::findMatchingBracePos(int & braceAtCaret, int & braceOpposite)
+@@ -2046,29 +2046,27 @@ void Notepad_plus::findMatchingBracePos(int & braceAtCaret, int & braceOpposite)
  	int caretPos = int(_pEditView->execute(SCI_GETCURRENTPOS));
  	braceAtCaret = -1;
  	braceOpposite = -1;

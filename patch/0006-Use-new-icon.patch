@@ -1,7 +1,7 @@
-From d5360e90f5663d996e5c162574640e89d45f94dd Mon Sep 17 00:00:00 2001
+From 4cf87aab91a2883d51b55c829e65c6868318aaed Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:24:41 +0300
-Subject: [PATCH 06/12] Use new icon
+Subject: [PATCH 06/10] Use new icon
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.4.5"
 
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Notepad_plus.rc b/PowerEditor/src/Notepad_plus.rc
-index 12ad0c7..eb471e5 100644
+index a118459..2ec0fd1 100644
 --- a/PowerEditor/src/Notepad_plus.rc
 +++ b/PowerEditor/src/Notepad_plus.rc
 @@ -61,7 +61,7 @@ END

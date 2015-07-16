@@ -1,7 +1,7 @@
-From ffcd85e07321b55d882afe143dd703a15e0d1700 Mon Sep 17 00:00:00 2001
+From fb07af23d5cd36d54c2bd99eaae6bb715a204629 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 17:12:04 +0300
-Subject: [PATCH 01/12] Update Scintilla.iface to include npp definitions
+Subject: [PATCH 01/10] Update Scintilla.iface to include npp definitions
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.4.5"
 
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/scintilla/include/Scintilla.iface b/scintilla/include/Scintilla.iface
-index 63657f3..4aa256c 100644
+index 63657f3..449d1d5 100644
 --- a/scintilla/include/Scintilla.iface
 +++ b/scintilla/include/Scintilla.iface
 @@ -2352,7 +2352,7 @@ fun void Colourise=4003(position start, position end)

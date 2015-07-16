@@ -3,8 +3,8 @@ Build patched Notepad++ from sources
 Get Notepad++ sources into trunk
 git clone git@github.com:notepad-plus-plus/notepad-plus-plus.git trunk
 
-Checkout sources for release 6.7.7
-git checkout -f fdf47cd3005ff6cf716753268cac68af0bdb7f71 -b npp_677
+Checkout sources for release 6.7.8.2
+git checkout -f b85fc028417d43db91967d10d348c5942201cd43 -b npp_6782
 
 Apply patches with
 git am --ignore-whitespace --whitespace=nowarn ../patch/00*

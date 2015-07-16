@@ -1,7 +1,7 @@
-From c10c600d6e1562b45f75acc054a665a42eb41a5b Mon Sep 17 00:00:00 2001
+From 9b565bb86a59cb23e40f1ae2831d2f6474623d19 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:20:26 +0300
-Subject: [PATCH 04/12] Indent change maintains indent type
+Subject: [PATCH 04/10] Indent change maintains indent type
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.4.5"
 
@@ -16,7 +16,7 @@ Content-Transfer-Encoding: 8bit
   the global type.
 
 diff --git a/scintilla/src/Document.cxx b/scintilla/src/Document.cxx
-index 64f6b46..a6808c1 100644
+index 64f6b46..09a0c80 100644
 --- a/scintilla/src/Document.cxx
 +++ b/scintilla/src/Document.cxx
 @@ -1179,7 +1179,14 @@ void Document::SetLineIndentation(int line, int indent) {

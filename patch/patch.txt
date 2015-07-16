@@ -1,0 +1,2 @@
+To generate diffs:
+git format-patch --minimal --no-stat --inline <commit-of-release>..
