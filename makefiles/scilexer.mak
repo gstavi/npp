@@ -37,6 +37,8 @@ PRE_INSTALL_DEP = $(INSTALL_PATH)/sci_lic.txt
 
 $(eval $(call COMMON_RULES))
 
+clean: touch_iface
+
 scintilla_regen: $(SRCDIR)/include/SciLexer.h $(SRCDIR)/src/Catalogue.cxx \
 	$(SRCDIR)/include/Scintilla.h
 
@@ -48,7 +50,10 @@ $(SRCDIR)/include/Scintilla.h $(SRCDIR)/include/SciLexer.h: \
 	$(SRCDIR)/include/Scintilla.iface
 	@cd $(SRCDIR)/scripts && python HFacer.py
 
+touch_iface:
+	touch $(SRCDIR)/include/Scintilla.iface
+
 $(INSTALL_PATH)/sci_lic.txt: $(SRCDIR)/License.txt | $(INSTALL_PATH)
 	cp $< $@
 
-.PHONY: scintilla_regen
+.PHONY: scintilla_regen touch_iface
