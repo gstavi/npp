@@ -1,12 +1,12 @@
-From 0e483d2f19ac553c2cefe8ba7d468327fb5a2620 Mon Sep 17 00:00:00 2001
+From d52819e7a8345614f867cbd4ee09b889681496fb Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:39:22 +0300
 Subject: [PATCH 08/10] Use file descriptor API instead FILE api
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.4.5"
+Content-Type: multipart/mixed; boundary="------------2.5.3"
 
 This is a multi-part message in MIME format.
---------------2.4.5
+--------------2.5.3
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
@@ -248,6 +248,6 @@ index c47d964..1b0671a 100644
  	size_t m_nBufSize;
  	bool m_bFirstWrite;
 
---------------2.4.5--
+--------------2.5.3--
 
 

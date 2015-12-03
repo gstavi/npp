@@ -3,10 +3,10 @@ From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 15:58:55 +0300
 Subject: [PATCH 02/10] better handling for matching braces
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.4.5"
+Content-Type: multipart/mixed; boundary="------------2.5.3"
 
 This is a multi-part message in MIME format.
---------------2.4.5
+--------------2.5.3
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
@@ -62,6 +62,6 @@ index d1ba610..79d290e 100644
  		braceOpposite = int(_pEditView->execute(SCI_BRACEMATCH, braceAtCaret, 0));
  }
 
---------------2.4.5--
+--------------2.5.3--
 
 

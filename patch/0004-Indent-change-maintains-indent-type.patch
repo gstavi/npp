@@ -1,12 +1,12 @@
-From 9b565bb86a59cb23e40f1ae2831d2f6474623d19 Mon Sep 17 00:00:00 2001
+From ac48b2cc8d4aacc08f634ea9989490702fc0f03b Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:20:26 +0300
 Subject: [PATCH 04/10] Indent change maintains indent type
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.4.5"
+Content-Type: multipart/mixed; boundary="------------2.5.3"
 
 This is a multi-part message in MIME format.
---------------2.4.5
+--------------2.5.3
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
@@ -16,10 +16,51 @@ Content-Transfer-Encoding: 8bit
   the global type.
 
 diff --git a/scintilla/src/Document.cxx b/scintilla/src/Document.cxx
-index 64f6b46..09a0c80 100644
+index 64f6b46..7a76b39 100644
 --- a/scintilla/src/Document.cxx
 +++ b/scintilla/src/Document.cxx
-@@ -1179,7 +1179,14 @@ void Document::SetLineIndentation(int line, int indent) {
+@@ -1174,12 +1174,54 @@ int SCI_METHOD Document::GetLineIndentation(int line) {
+ 	return indent;
+ }
+ 
++/* Decide if line should be indented with tabs (true) or spaces (false).
++ * Line starts with tab --> use tabs
++ * Line starts with space worth of tab -> use spaces
++ * Else -> Decide based on line above.
++ * After 8 lines use configuration mode. */
++bool Document::LineIndentWithTabs(int line) const {
++	int up_line, max_up_line, lineStart, i, docLength;
++	char ch;
++
++	if (tabInChars == 0) {
++		return useTabs;
++	}
++
++	docLength = Length();
++	/* Test up to 8 lines above current for a line with valid indentation. */
++	max_up_line = line < 8 ? line : 8;
++	for (up_line = 0; up_line <= max_up_line; up_line++) {
++		lineStart = LineStart(line - up_line);
++		/* Count successive spaces at beginning of line. */
++		for (i = 0; i < tabInChars; i++) {
++			ch = lineStart + i < docLength ? CharAt(lineStart + i) : '\n';
++			if (ch != ' ') {
++				break;
++			}
++		}
++		if (i == 0 && ch == '\t') {
++			return true;
++		}
++		if (i == tabInChars) {
++			return false;
++		}
++		/* Try upper line */
++	}
++	return useTabs;
++}
++
+ void Document::SetLineIndentation(int line, int indent) {
+ 	int indentOfLine = GetLineIndentation(line);
  	if (indent < 0)
  		indent = 0;
  	if (indent != indentOfLine) {
@@ -29,13 +70,24 @@ index 64f6b46..09a0c80 100644
 +		 * indentation of the line and not the global mode.
 +		 */
 +		int lineStart = LineStart(line);
-+		char ch = lineStart < Length() ? cb.CharAt(lineStart) : useTabs ? '\t' : ' ';
-+		bool effUseTabs = ch == '\t' ? true : ch == ' ' ? false : useTabs;
++		bool effUseTabs = LineIndentWithTabs(line);
 +		std::string linebuf = CreateIndentation(indent, tabInChars, !effUseTabs);
  		int thisLineStart = LineStart(line);
  		int indentPos = GetLineIndentPosition(line);
  		UndoGroup ug(this);
+diff --git a/scintilla/src/Document.h b/scintilla/src/Document.h
+index 94e288e..d31b548 100644
+--- a/scintilla/src/Document.h
++++ b/scintilla/src/Document.h
+@@ -293,6 +293,7 @@ public:
+ 	int GapPosition() const { return cb.GapPosition(); }
+ 
+ 	int SCI_METHOD GetLineIndentation(int line);
++	bool LineIndentWithTabs(int line) const;
+ 	void SetLineIndentation(int line, int indent);
+ 	int GetLineIndentPosition(int line) const;
+ 	int GetColumn(int position);
 
---------------2.4.5--
+--------------2.5.3--
 
 

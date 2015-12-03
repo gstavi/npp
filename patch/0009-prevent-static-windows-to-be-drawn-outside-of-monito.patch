@@ -1,12 +1,12 @@
-From e6648564bc283d6cdbc3b0b6fcb10cf200a21e0d Mon Sep 17 00:00:00 2001
+From 66dc238c37f44a8ec86ff7e9979ba89acae47a2e Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:41:20 +0300
 Subject: [PATCH 09/10] prevent static windows to be drawn outside of monitor.
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.4.5"
+Content-Type: multipart/mixed; boundary="------------2.5.3"
 
 This is a multi-part message in MIME format.
---------------2.4.5
+--------------2.5.3
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
@@ -95,6 +95,6 @@ index 8683c65..9076e62 100644
  
  
 
---------------2.4.5--
+--------------2.5.3--
 
 
