@@ -196,6 +196,8 @@ void *LexerCommon::PrivateCall(int, void *)
   return NULL;
 }
 
+/* Default implementation for DoLex. Typically overrided by actual Lexer so this
+ * method is not expected to be called. */
 void LexerCommon::DoLex(DoLexContext *ctx)
 {
   int endPos = ctx->startPos + ctx->length - 1;
@@ -203,6 +205,8 @@ void LexerCommon::DoLex(DoLexContext *ctx)
   ctx->ColourTo(endPos, 0);
 }
 
+/* Default implementation for DoFold. Typically overrided by actual Lexer so
+ * this method is not expected to be called. */
 void LexerCommon::DoFold(DoLexContext *)
 {
 }
@@ -508,7 +512,4 @@ int LexerCommon::PosBank::Find(int posAfter)
   used = from + 1;
   return posArr[from];
 }
-
-
-
 

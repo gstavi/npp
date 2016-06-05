@@ -17,6 +17,26 @@
     along with lexamples.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+ * General functionality.
+ * ----------------------
+ * The tokener loop collects tokens and builds entity tree. There is a 'current'
+ * entity that is used as context. Tokens are collected based on the current
+ * entity.
+ * Tokens are SIMPLE! usually 1 or 2 chars or even 0 chars. The most common
+ * token is TOK_CHAR - a single character.
+ * Each token modifies the current entity. It may:
+ * 1. Extend it and keep it current.
+ * 2. Terminate it and create a sibling or child that will become current. Or
+ *    set the parent as current.
+ * NOTE: A keyword is NOT a token. A (text) 'word' is an entity which is
+ * extended as TOK_CHAR tokens are found until some token terminates it.
+ * Sometimes a token may modify other entities (besides the current) in the
+ * tree, parent or previous sibling.
+ * Entity tree is flushed as styles when a logical block is ended and new tokens
+ * can no longer affect previous entities. Usually at end of line.
+ */
+
  /* Includes required for LexCommon.h */
 #include <assert.h>
 #include <string>
@@ -52,7 +72,7 @@ static const char defaultNmakeDirectiveStrings[] = "cmdswitches error message "
 /** Entity types:
 MK_TOP
 MK_EMPTY_LINE       A line not yet classified
-MK_DIRECTIVE_LINE   Starts with a directive, will not transorm to target
+MK_DIRECTIVE_LINE   Starts with a directive, will not transform to target
 MK_TEXT_LINE        A line with at least one non-directive word
 MK_PREPROC_LINE     An NMAKE pre-processor line
 MK_TARGETS          With words that act as targets of a rule
@@ -77,7 +97,7 @@ MK_INCL_FILE        A file following include directive
 MK_ASSIGN_OP        = or := or += or ?=
 MK_VARIABLE         Variable. Often on left side of an asignment
 MK_ASSIGN_SRC       Right side of an asignment.
-MK_BAD_EOL_CONT     Backslash (\) followd by whitespace at end of line
+MK_BAD_EOL_CONT     Backslash (\) followed by whitespace at end of line
 **/
 
 /* Define an enum of entity types and assign a tokening method to each */
@@ -242,7 +262,7 @@ public:
   bool OpTokenTest();
   bool EndOfWord();
 
-  /* These will always find a token, at least MK_CHAR. They return bool to
+  /* These will always find a token, at least TOK_CHAR. They return bool to
    * allow the use of: return SetTok() */
   bool Default();
   bool WithOperators();

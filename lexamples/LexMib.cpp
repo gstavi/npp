@@ -537,7 +537,7 @@ MibEntity *MibTokener::FlushStyles()
   top.wordCount = 0;
   ent = &top;
   lastObjWord = NULL;
-  /* Add position immidiatly after flush to bank so future Lex opeartions
+  /* Add position immediately after flush to bank so future Lex operations
    * could start from it */
   lexer->idlePosBank.Add(top.Pos());
   return ent;

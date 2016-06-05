@@ -1,7 +1,7 @@
-From fb07af23d5cd36d54c2bd99eaae6bb715a204629 Mon Sep 17 00:00:00 2001
+From 053e060ac544a92ecab930e1ddc54e99abf80d72 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 17:12:04 +0300
-Subject: [PATCH 01/10] Update Scintilla.iface to include npp definitions
+Subject: [PATCH 01/11] Update Scintilla.iface to include npp definitions
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.5.3"
 

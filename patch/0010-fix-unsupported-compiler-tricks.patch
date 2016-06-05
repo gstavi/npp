@@ -1,7 +1,7 @@
-From f6709c4ec9a892b1c71f7ec3648bb420ed0ab11c Mon Sep 17 00:00:00 2001
+From 4dc1b9ceaf63545c1bf76d9e6616684674553923 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Thu, 16 Jul 2015 15:26:30 +0300
-Subject: [PATCH 10/10] fix unsupported compiler tricks
+Subject: [PATCH 10/11] fix unsupported compiler tricks
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.5.3"
 
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/MISC/Common/Common.cpp b/PowerEditor/src/MISC/Common/Common.cpp
-index ec16d2c..0dafdce 100644
+index ec16d2c..8296ecd 100644
 --- a/PowerEditor/src/MISC/Common/Common.cpp
 +++ b/PowerEditor/src/MISC/Common/Common.cpp
 @@ -780,13 +780,13 @@ long long stollStrict(const generic_string& input)

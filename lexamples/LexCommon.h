@@ -94,25 +94,41 @@ protected:
     (*lastProp)->next = NULL; \
     lastProp = &((*lastProp)->next);}
 
+/* Context for single 'Lexing' call for a specific document.
+ * Allocated on stack. */
 class LexerCommon::DoLexContext
 {
 public:
   DoLexContext(IDocument *pAccess):
     styler(pAccess) {};
 
+  /* Move Lexing starting point. Typically used if lexing was requested at the
+   * middle of a multi line logical block (like comment) and we must start from
+   * the beginning. */
   void StartAt(int pos);
+  /* Set the specific style ;chAttr' from 'current position' (remembered by\
+   * scintilla) to position 'pos'. */
   void ColourTo(int pos, int chAttr);
+  /* Test if current entry within the lexing tree refers to a specific string. */
   bool IsEqual(const LexerEntity *ent, const char *str);
   bool IsEqualLowered(const LexerEntity *ent, const char *str);
 
   LexAccessor styler;
   LexerCommon *lexer;
   void *userPtr;
+  /* Position within document of the first character that should be Lexed. */
   int startPos;
+  /* Number of characters that should be Lexed. Used to stop Lexing at the end
+   * of the visible region. */
   int length;
+  /* Flag that indicates that we finished Lexing all requested characters. */
   bool doneStyling;
 };
 
+/* Maintain an array of 'idle' positions which are safe to start Lexing at.
+ * Typically the beginnings of lines following the end of some logical block.
+ * Any 'Find' (lookup) for a position flush all the position after it assuming
+ * it will be followed by Lexing that modifies idle points anyway. */
 class LexerCommon::PosBank
 {
 public:
@@ -123,8 +139,12 @@ public:
 
 private:
   int *posArr;
+  /* Number of valid positions within 'posArr'. */
   int used;
+  /* Number of allocated entries within 'posArr'. */
   int allocSize;
+  /* Minimal distance between 2 postions in bank so small bank could cover large
+   * file. */
   int minDistance;
 };
 
