@@ -1,0 +1,720 @@
+From 7a022aaadbd4866feeea74450b251401d4b97bbb Mon Sep 17 00:00:00 2001
+From: gstavi <gstavi@users.noreply.github.com>
+Date: Mon, 6 Jun 2016 09:38:10 +0300
+Subject: [PATCH 12/12] Separate task list view into filname and path
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------2.5.3"
+
+This is a multi-part message in MIME format.
+--------------2.5.3
+Content-Type: text/plain; charset=UTF-8; format=fixed
+Content-Transfer-Encoding: 8bit
+
+
+* Shorten paths by removing common prefix.
+* Enlarge font.
+
+diff --git a/PowerEditor/src/NppCommands.cpp b/PowerEditor/src/NppCommands.cpp
+index 1c404f0..290c715 100644
+--- a/PowerEditor/src/NppCommands.cpp
++++ b/PowerEditor/src/NppCommands.cpp
+@@ -2373,7 +2373,7 @@ void Notepad_plus::command(int id)
+ 				{		
+ 					int iconDpiDynamicalSize = NppParameters::getInstance()->_dpiManager.scaleY(_toReduceTabBar?12:18);
+ 					TaskListDlg tld;
+-					_docTabIconList.setIconSize(13);
++					_docTabIconList.setIconSize(15);
+ 					HIMAGELIST hImgLst = _docTabIconList.getHandle();
+ 					tld.init(_pPublicInterface->getHinst(), _pPublicInterface->getHSelf(), hImgLst, direction);
+ 					tld.doDialog();
+diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.cpp b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
+index 67ed1ef..a0df9ec 100644
+--- a/PowerEditor/src/WinControls/TaskList/TaskList.cpp
++++ b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
+@@ -7,10 +7,10 @@
+ // version 2 of the License, or (at your option) any later version.
+ //
+ // Note that the GPL places important restrictions on "derived works", yet
+-// it does not provide a detailed definition of that term.  To avoid      
+-// misunderstandings, we consider an application to constitute a          
++// it does not provide a detailed definition of that term.  To avoid
++// misunderstandings, we consider an application to constitute a
+ // "derivative work" for the purpose of this license if it does any of the
+-// following:                                                             
++// following:
+ // 1. Integrates source code from Notepad++.
+ // 2. Integrates/includes/aggregates Notepad++ into a proprietary executable
+ //    installer, such as those produced by InstallShield.
+@@ -35,33 +35,32 @@
+ 
+ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem, int index2set)
+ {
++	INITCOMMONCONTROLSEX icex;
++	LVCOLUMN lvColumn;
++
+ 	Window::init(hInst, parent);
+ 
++	// Ensure that the common control DLL is loaded.
++	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
++	icex.dwICC  = ICC_LISTVIEW_CLASSES;
++	InitCommonControlsEx(&icex);
++
+ 	_currentIndex = index2set;
++	_nbItem = nbItem;
+ 
+-    INITCOMMONCONTROLSEX icex;
+-    
+-    // Ensure that the common control DLL is loaded. 
+-    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+-    icex.dwICC  = ICC_LISTVIEW_CLASSES;
+-    InitCommonControlsEx(&icex);
++	// Create the list-view window in report view with label editing enabled.
++	int listViewStyles = LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER
++		| LVS_SINGLESEL | LVS_AUTOARRANGE | LVS_SHAREIMAGELISTS;
+ 
+-	_nbItem = nbItem;
+-    
+-    // Create the list-view window in report view with label editing enabled.
+-	int listViewStyles = LVS_REPORT | LVS_OWNERDATA | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER\
+-						| /*LVS_NOSCROLL |*/ LVS_SINGLESEL | LVS_AUTOARRANGE\
+-						| LVS_SHAREIMAGELISTS/* | WS_BORDER*/;
+-
+-	_hSelf = ::CreateWindow(WC_LISTVIEW, 
+-                                TEXT(""), 
++	_hSelf = ::CreateWindow(WC_LISTVIEW,
++                                TEXT(""),
+                                 WS_CHILD | listViewStyles,
+                                 0,
+-                                0, 
+                                 0,
+                                 0,
+-                                _hParent, 
+-                                (HMENU) NULL, 
++                                0,
++                                _hParent,
++                                (HMENU) NULL,
+                                 hInst,
+                                 NULL);
+ 	if (!_hSelf)
+@@ -73,21 +72,21 @@ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem
+ 	_defaultProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtr(_hSelf, GWLP_WNDPROC, (LONG_PTR)staticProc));
+ 
+ 	DWORD exStyle = ListView_GetExtendedListViewStyle(_hSelf);
+-	exStyle |= LVS_EX_FULLROWSELECT | LVS_EX_BORDERSELECT ;
++	exStyle |= LVS_EX_FULLROWSELECT;
+ 	ListView_SetExtendedListViewStyle(_hSelf, exStyle);
+ 
++	::memset(&lvColumn, 0, sizeof(lvColumn));
++	lvColumn.mask = LVCF_WIDTH | LVCF_SUBITEM;
++	lvColumn.iSubItem = TL_COLUMN_FILENAME;
++	lvColumn.cx = 100;
++	ListView_InsertColumn(_hSelf, TL_COLUMN_FILENAME, &lvColumn);
+ 
+-	LVCOLUMN lvColumn;
+-	lvColumn.mask = LVCF_WIDTH;
++	lvColumn.mask = LVCF_WIDTH | LVCF_SUBITEM;
++	lvColumn.iSubItem = TL_COLUMN_PATH;
++	lvColumn.cx = 100;
++	ListView_InsertColumn(_hSelf, TL_COLUMN_PATH, &lvColumn);
+ 
+-	lvColumn.cx = 500;
+-
+-	ListView_InsertColumn(_hSelf, 0, &lvColumn);
+-
+-	ListView_SetItemCountEx(_hSelf, _nbItem, LVSICF_NOSCROLL);
+ 	ListView_SetImageList(_hSelf, hImaLst, LVSIL_SMALL);
+-
+-	ListView_SetItemState(_hSelf, _currentIndex, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
+ 	ListView_SetBkColor(_hSelf, lightYellow);
+ 	ListView_SetTextBkColor(_hSelf, lightYellow);
+ }
+@@ -102,47 +101,283 @@ void TaskList::destroy()
+ 	_hSelf = NULL;
+ }
+ 
++static void ResetVertScrollBar(HWND hwnd)
++{
++	SCROLLINFO scrlInfo;
++
++	scrlInfo.cbSize = sizeof(scrlInfo);
++	scrlInfo.fMask = SIF_ALL;
++	::GetScrollInfo(hwnd, SB_VERT, &scrlInfo);
++	scrlInfo.fMask = SIF_POS;
++	scrlInfo.nPos = scrlInfo.nMin;
++	::SetScrollInfo(hwnd, SB_VERT, &scrlInfo, FALSE);
++}
++
++static int TSTR_to_str(const TCHAR *Str, int StrSize, char *Buff,
++  int BuffSize)
++{
++  int n = 0;
++
++  if (StrSize == -1)
++    StrSize = ::_tcslen(Str);
++
++  if (StrSize > 0)
++  {
++#ifdef UNICODE
++    n = ::WideCharToMultiByte(CP_UTF8, 0, Str, StrSize, Buff, BuffSize,
++      NULL, NULL);
++    if (n <= 0 || n >= BuffSize)
++      n = BuffSize - 1;
++#else
++    if (n > BuffSize)
++      n = BuffSize - 1;
++    ::memcpy(Buff, Str, n);
++#endif
++  }
++
++  Buff[n] = '\0';
++  return n;
++}
++
++static int str_to_TSTR(const char *Str, int StrSize, TCHAR *Buff,
++  int BuffSize)
++{
++  int n = 0;
++
++  if (StrSize == -1)
++    StrSize = ::strlen(Str);
++
++  if (StrSize > 0)
++  {
++#ifdef UNICODE
++    n = ::MultiByteToWideChar (CP_UTF8, 0, Str, StrSize, Buff, BuffSize);
++    if (n <= 0 || n >= BuffSize)
++      n = BuffSize - 1;
++#else
++    if (n > BuffSize)
++      n = BuffSize - 1;
++    ::memcpy(Buff, Str, n);
++#endif
++  }
++
++  Buff[n] = _T('\0');
++  return n;
++}
++
++static int is_dir_sep(char ch)
++{
++	return ch == '/' || ch == '\\';
++}
++
++/* Update length to remove anything above the current dir separator. */
++static void path_drop_curr(const char *path, int *length)
++{
++	/* Remove everything until dir separator. */
++	while (*length > 0 && !is_dir_sep(path[*length - 1]))
++	{
++		(*length)--;
++	}
++}
++
++/* Update length to drop path separator immediately below it. */
++static void path_drop_separator(const char *path, int *length)
++{
++	/* Remove everything until dir separator. */
++	while (*length > 0 && is_dir_sep(path[*length - 1]))
++	{
++		(*length)--;
++	}
++}
++
++/* Update length to refer to a single directory below. */
++static void path_drop_dir(const char *path, int *length)
++{
++	path_drop_separator(path, length);
++	path_drop_curr(path, length);
++}
++
++/* Add single item (file path) into list view of task list.
++ * Break down file path into name and path.
++ * Remove from path common prefix that was calculated before. */
++void TaskList::addItem(int idx, const struct TaskLstFnStatus *file,
++	int prefix_length)
++{
++	LVITEM lvItem;
++	int item_idx;
++	char Path[512];
++	TCHAR filename[512];
++	TCHAR pathname[512];
++	int n, off, width;
++
++	n = TSTR_to_str(file->_fn.c_str(), -1, Path, sizeof(Path));
++	off = n;
++	path_drop_curr(Path, &off);
++
++	str_to_TSTR(Path + off, n - off, filename, sizeof(filename));
++	if (off == 3 && Path[2] == '\\' && Path[1] == ':')
++	{
++		/* Don't remove separator. Path is "X:\" */
++	}
++	else
++	{
++		path_drop_separator(Path, &off);
++	}
++	if (off <= prefix_length)
++	{
++		prefix_length = 0;
++	}
++	str_to_TSTR(Path + prefix_length, off - prefix_length,
++		pathname, sizeof(pathname));
++
++	width = ListView_GetStringWidth(_hSelf, filename);
++	if (width > column_width[TL_COLUMN_FILENAME])
++	{
++		column_width[TL_COLUMN_FILENAME] = width;
++	}
++
++	width = ListView_GetStringWidth(_hSelf, pathname);
++	if (width > column_width[TL_COLUMN_PATH])
++	{
++		column_width[TL_COLUMN_PATH] = width;
++	}
++
++	lvItem.mask = LVIF_IMAGE | LVIF_STATE;
++	lvItem.iItem = idx;
++	lvItem.iSubItem = 0;
++	lvItem.iImage = file->_status;
++	lvItem.stateMask = 0xFF;
++	lvItem.state = (idx != _currentIndex) ? 0 : LVIS_SELECTED|LVIS_FOCUSED;
++	item_idx = ListView_InsertItem(_hSelf, &lvItem);
++
++	lvItem.mask = LVIF_TEXT;
++	lvItem.iSubItem = TL_COLUMN_FILENAME;
++	lvItem.pszText = filename;
++	ListView_SetItem(_hSelf, &lvItem);
++
++	lvItem.mask = LVIF_TEXT;
++	lvItem.iSubItem = TL_COLUMN_PATH;
++	lvItem.pszText = pathname;
++	ListView_SetItem(_hSelf, &lvItem);
++
++}
++
++/* If common prefix is shorter than that, just leave it. */
++#define COMMON_PREFIX_MIN 8
++
++/* Called for all items in task list to identify common prefix that will not be
++ * displayed in 'path' column. */
++static void findCommonPrefix(const struct TaskLstFnStatus *file,
++	char *buff, int buff_size, int *length, int *first)
++{
++	char Path[512];
++	int i, n;
++
++	/* Early exit if there is no prefix or short prefix. */
++	if (!*first && *length < COMMON_PREFIX_MIN)
++	{
++		*length = 0;
++		return;
++	}
++
++	n = TSTR_to_str(file->_fn.c_str(), -1, Path, sizeof(Path));
++	path_drop_curr(Path, &n);
++	if (n == 0)
++	{
++		return;
++	}
++
++	if (*first)
++	{
++		*first = 0;
++		if (n > buff_size)
++		{
++			n = buff_size - 1;
++			path_drop_curr(Path, &n);
++		}
++		*length = n;
++		memcpy(buff, Path, n);
++		buff[n] = '\0';
++		return;
++	}
++
++	for (i = 0; i < n; i++)
++	{
++		if (Path[i] != buff[i])
++		{
++			break;
++		}
++	}
++
++	if (i < *length)
++	{
++		path_drop_curr(Path, &i);
++		*length = i;
++		buff[i] = '\0';
++	}
++}
++
++void TaskList::addItems(const struct TaskListInfo *tl_info)
++{
++	const struct TaskLstFnStatus *file;
++	int i, first, prefix_length;
++	char prefix_buff[512];
++
++	first = 1;
++	prefix_length = 1;
++	for (i = 0; i < _nbItem && prefix_length > 0; i++)
++	{
++		file = &tl_info->_tlfsLst[i];
++		findCommonPrefix(file, prefix_buff, sizeof(prefix_buff),
++			&prefix_length, &first);
++	}
++
++	/* Path should include at least 2 dirs to avoid confusion. */
++	path_drop_dir(prefix_buff, &prefix_length);
++	path_drop_dir(prefix_buff, &prefix_length);
++	if (prefix_length < COMMON_PREFIX_MIN)
++	{
++		prefix_length = 0;
++	}
++
++
++	memset(column_width, 0, sizeof(column_width));
++	for (i = 0; i < _nbItem; i++)
++	{
++		file = &tl_info->_tlfsLst[i];
++		addItem(i, file, prefix_length);
++	}
++}
++
+ RECT TaskList::adjustSize()
+ {
+-	RECT rc;
+-	ListView_GetItemRect(_hSelf, 0, &rc, LVIR_ICON);
+-	const int imgWidth = rc.right - rc.left;
+-	const int leftMarge = 10;
+-	const int xpBottomMarge = 5;
+-	const int w7BottomMarge = 5;
+ 	DWORD approxRect;
+ 
+-	// Temporary set "selected" font to get the worst case widths
+-	::SendMessage(_hSelf, WM_SETFONT, reinterpret_cast<WPARAM>(_hFontSelected), 0);
+-	int maxwidth = -1;
++	ListView_SetColumnWidth(_hSelf, TL_COLUMN_FILENAME,
++		column_width[TL_COLUMN_FILENAME] + 30);
++	ListView_SetColumnWidth(_hSelf, TL_COLUMN_PATH,
++		column_width[TL_COLUMN_PATH] + 30);
++
++	approxRect = ::SendMessage(_hSelf, LVM_APPROXIMATEVIEWRECT, -1, -1);
+ 
+ 	_rc.left = 0;
+ 	_rc.top = 0;
+-	for (int i = 0 ; i < _nbItem ; ++i)
+-	{
+-		TCHAR buf[MAX_PATH];
+-		ListView_GetItemText(_hSelf, i, 0, buf, MAX_PATH);
+-		int width = ListView_GetStringWidth(_hSelf, buf);
+-		if (width > maxwidth)
+-			maxwidth = width;
+-	}
+-	_rc.right = maxwidth + imgWidth + leftMarge;
+-	ListView_SetColumnWidth(_hSelf, 0, _rc.right);
+-	winVer ver = (NppParameters::getInstance())->getWinVersion();
+-	::SendMessage(_hSelf, WM_SETFONT, reinterpret_cast<WPARAM>(_hFont), 0);
+-	approxRect = ::SendMessage(_hSelf, LVM_APPROXIMATEVIEWRECT, -1, -1);
+ 	_rc.right = LOWORD(approxRect);
+-	_rc.bottom = HIWORD(approxRect);
+-	_rc.bottom += (ver <= WV_XP && ver != WV_UNKNOWN)?xpBottomMarge:w7BottomMarge;
++	_rc.bottom = HIWORD(approxRect) + 5;
++
+ 	::ShowScrollBar(_hSelf, SB_HORZ, FALSE);
+-	if (_rc.bottom < 512) {
++	if (_rc.bottom < 512)
++	{
+ 		::ShowScrollBar(_hSelf, SB_VERT, FALSE);
+-	} else {
+-		_rc.bottom = 512;
+-		::ShowScrollBar(_hSelf, SB_VERT, TRUE);
+-		_rc.right += ::GetSystemMetrics(SM_CXVSCROLL);
++		reSizeTo(_rc);
++		return _rc;
+ 	}
++
++	_rc.bottom = 512;
++	::ShowScrollBar(_hSelf, SB_VERT, TRUE);
++	_rc.right += ::GetSystemMetrics(SM_CXVSCROLL);
+ 	reSizeTo(_rc);
++	ResetVertScrollBar(_hSelf);
++	ListView_EnsureVisible(_hSelf, _currentIndex, FALSE);
+ 	return _rc;
+ }
+ 
+@@ -188,14 +423,14 @@ void TaskList::moveSelection(int delta)
+ 	size_t selected;
+ 
+ 	selected = (_currentIndex + _nbItem + delta) % _nbItem;
+-
+ 	::SendMessage(_hSelf, WM_SETREDRAW, FALSE, 0);
+ 	ListView_SetItemState(_hSelf, _currentIndex, 0, LVIS_SELECTED|LVIS_FOCUSED);
+-	ListView_SetItemState(_hSelf, selected, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
++	ListView_SetItemState(_hSelf, selected, LVIS_SELECTED|LVIS_FOCUSED,
++		LVIS_SELECTED|LVIS_FOCUSED);
+ 	ListView_EnsureVisible(_hSelf, selected, FALSE);
+ 	::SendMessage(_hSelf, WM_SETREDRAW, TRUE, 0);
+-	UpdateWindow(_hSelf);              
+-
++	::RedrawWindow(_hSelf, NULL, NULL, 0);
++		//RDW_ERASE  | RDW_INVALIDATE | RDW_ALLCHILDREN);
+ 	_currentIndex = selected;
+ }
+ 
+@@ -230,7 +465,7 @@ LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+ 		{
+ 			return TRUE;
+ 		}
+-		
++
+ 
+ 		case WM_GETDLGCODE :
+ 		{
+diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.h b/PowerEditor/src/WinControls/TaskList/TaskList.h
+index 72e05ec..bac5e65 100644
+--- a/PowerEditor/src/WinControls/TaskList/TaskList.h
++++ b/PowerEditor/src/WinControls/TaskList/TaskList.h
+@@ -7,10 +7,10 @@
+ // version 2 of the License, or (at your option) any later version.
+ //
+ // Note that the GPL places important restrictions on "derived works", yet
+-// it does not provide a detailed definition of that term.  To avoid      
+-// misunderstandings, we consider an application to constitute a          
++// it does not provide a detailed definition of that term.  To avoid
++// misunderstandings, we consider an application to constitute a
+ // "derivative work" for the purpose of this license if it does any of the
+-// following:                                                             
++// following:
+ // 1. Integrates source code from Notepad++.
+ // 2. Integrates/includes/aggregates Notepad++ into a proprietary executable
+ //    installer, such as those produced by InstallShield.
+@@ -33,6 +33,28 @@
+ #define WM_MOUSEWHEEL 0x020A
+ #endif //WM_MOUSEWHEEL
+ 
++struct TaskLstFnStatus {
++	int _iView;
++	int _docIndex;
++	generic_string _fn;
++	int _status;
++	void *_bufID;
++	TaskLstFnStatus(generic_string str, int status) : _fn(str), _status(status){};
++	TaskLstFnStatus(int iView, int docIndex, generic_string str, int status, void *bufID) :
++	_iView(iView), _docIndex(docIndex), _fn(str), _status(status), _bufID(bufID) {};
++};
++
++struct TaskListInfo {
++	std::vector<TaskLstFnStatus> _tlfsLst;
++	int _currentIndex;
++};
++
++enum {
++	TL_COLUMN_FILENAME = 0,
++	TL_COLUMN_PATH,
++	TL_COLUMN_LAST
++};
++
+ class TaskList : public Window
+ {
+ public:
+@@ -57,6 +79,10 @@ public:
+ 
+ 	HFONT GetFontSelected() {return _hFontSelected;}
+ 
++	void TaskList::addItem(int idx, const struct TaskLstFnStatus *file,
++		int prefix_length);
++	void TaskList::addItems(const struct TaskListInfo *tl_info);
++
+ protected:
+ 
+ 	WNDPROC _defaultProc;
+@@ -72,6 +98,7 @@ protected:
+ 	int _nbItem;
+ 	int _currentIndex;
+ 	RECT _rc;
++	int column_width[TL_COLUMN_LAST];
+ };
+ 
+ 
+diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
+index bf24f10..7098b23 100644
+--- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
++++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
+@@ -7,10 +7,10 @@
+ // version 2 of the License, or (at your option) any later version.
+ //
+ // Note that the GPL places important restrictions on "derived works", yet
+-// it does not provide a detailed definition of that term.  To avoid      
+-// misunderstandings, we consider an application to constitute a          
++// it does not provide a detailed definition of that term.  To avoid
++// misunderstandings, we consider an application to constitute a
+ // "derivative work" for the purpose of this license if it does any of the
+-// following:                                                             
++// following:
+ // 1. Integrates source code from Notepad++.
+ // 2. Integrates/includes/aggregates Notepad++ into a proprietary executable
+ //    installer, such as those produced by InstallShield.
+@@ -36,12 +36,12 @@ LRESULT CALLBACK hookProc(UINT nCode, WPARAM wParam, LPARAM lParam)
+ 	if ((nCode >= 0) && (wParam == WM_RBUTTONUP))
+     {
+ 		::PostMessage(hWndServer, WM_RBUTTONUP, 0, 0);
+-    }        
+-	
++    }
++
+ 	return ::CallNextHookEx(hook, nCode, wParam, lParam);
+ }
+ 
+- int TaskListDlg::doDialog(bool isRTL) 
++ int TaskListDlg::doDialog(bool isRTL)
+  {
+ 	if (isRTL)
+ 	{
+@@ -64,7 +64,7 @@ BOOL CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPara
+ 			int nbTotal = _taskListInfo._tlfsLst.size();
+ 
+ 			int i2set = _taskListInfo._currentIndex + (_initDir == dirDown?1:-1);
+-			
++
+ 			if (i2set < 0)
+ 				i2set = nbTotal - 1;
+ 
+@@ -72,7 +72,8 @@ BOOL CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPara
+ 				i2set = 0;
+ 
+ 			_taskList.init(_hInst, _hSelf, _hImalist, nbTotal, i2set);
+-			_taskList.setFont(TEXT("Verdana"), -14);
++			_taskList.setFont(TEXT("Verdana"), -16);
++			_taskList.addItems(&_taskListInfo);
+ 			_rc = _taskList.adjustSize();
+ 
+ 			reSizeTo(_rc);
+@@ -102,30 +103,11 @@ BOOL CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPara
+ 			::SendMessage(_hSelf, WM_COMMAND, ID_PICKEDUP, _taskList.getCurrentIndex());
+ 			return TRUE;
+ 		}
+-		
+-
+-		case WM_DRAWITEM :
+-		{
+-			drawItem((DRAWITEMSTRUCT *)lParam);
+-			return TRUE;
+-		}
+ 
+ 		case WM_NOTIFY:
+ 		{
+ 			switch (((LPNMHDR)lParam)->code)
+ 			{
+-				case LVN_GETDISPINFO:
+-				{
+-					LV_ITEM &lvItem = reinterpret_cast<LV_DISPINFO*>((LV_DISPINFO FAR *)lParam)->item;
+-
+-					TaskLstFnStatus & fileNameStatus = _taskListInfo._tlfsLst[lvItem.iItem];
+-
+-					lvItem.pszText = (TCHAR *)fileNameStatus._fn.c_str();
+-					lvItem.iImage = fileNameStatus._status;
+-
+-					return TRUE;
+-				}
+-		
+ 				case NM_CLICK :
+ 				case NM_RCLICK :
+ 				{
+@@ -139,7 +121,7 @@ BOOL CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPara
+ 			break;
+ 		}
+ 
+-		case WM_COMMAND : 
++		case WM_COMMAND :
+ 		{
+ 			switch (wParam)
+ 			{
+@@ -165,49 +147,3 @@ BOOL CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPara
+ 	return FALSE;
+ }
+ 
+-void TaskListDlg::drawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+-{
+-	RECT rect = lpDrawItemStruct->rcItem;
+-	HDC hDC = lpDrawItemStruct->hDC;
+-	int nItem = lpDrawItemStruct->itemID;
+-	const TCHAR *label = _taskListInfo._tlfsLst[nItem]._fn.c_str();
+-	int iImage = _taskListInfo._tlfsLst[nItem]._status;
+-	
+-	COLORREF textColor = darkGrey;
+-	int imgStyle = ILD_SELECTED;
+-
+-	if (lpDrawItemStruct->itemState & ODS_SELECTED)
+-	{
+-		imgStyle = ILD_TRANSPARENT;
+-		textColor = black;
+-		::SelectObject(hDC, _taskList.GetFontSelected());
+-	}
+-	
+-	//
+-	// DRAW IMAGE
+-	//
+-	HIMAGELIST hImgLst = _taskList.getImgLst();
+-
+-	IMAGEINFO info;
+-	ImageList_GetImageInfo(hImgLst, iImage, &info);
+-
+-	RECT & imageRect = info.rcImage;
+-	//int yPos = (rect.top + (rect.bottom - rect.top)/2 + (isSelected?0:2)) - (imageRect.bottom - imageRect.top)/2;
+-	
+-	SIZE charPixel;
+-	::GetTextExtentPoint(hDC, TEXT(" "), 1, &charPixel);
+-	int spaceUnit = charPixel.cx;
+-	int marge = spaceUnit;
+-
+-	rect.left += marge;
+-	ImageList_Draw(hImgLst, iImage, hDC, rect.left, rect.top, imgStyle);
+-	rect.left += imageRect.right - imageRect.left + spaceUnit * 2;
+-
+-	//
+-	// DRAW TEXT
+-	//
+-	::SetTextColor(hDC, textColor);
+-	rect.top -= ::GetSystemMetrics(SM_CYEDGE);
+-		
+-	::DrawText(hDC, label, lstrlen(label), &rect, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
+-}
+diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.h b/PowerEditor/src/WinControls/TaskList/TaskListDlg.h
+index 9362e73..42bdd4e 100644
+--- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.h
++++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.h
+@@ -48,22 +48,6 @@
+ #define	TASKLIST_USER    (WM_USER + 8000)
+ 	#define WM_GETTASKLISTINFO (TASKLIST_USER + 01)
+ 
+-struct TaskLstFnStatus {
+-	int _iView;
+-	int _docIndex;
+-	generic_string _fn;
+-	int _status;
+-	void *_bufID;
+-	TaskLstFnStatus(generic_string str, int status) : _fn(str), _status(status){};
+-	TaskLstFnStatus(int iView, int docIndex, generic_string str, int status, void *bufID) : 
+-	_iView(iView), _docIndex(docIndex), _fn(str), _status(status), _bufID(bufID) {};
+-};
+-
+-struct TaskListInfo {
+-	std::vector<TaskLstFnStatus> _tlfsLst;
+-	int _currentIndex;
+-};
+-
+ static HWND hWndServer = NULL;
+ static HHOOK hook = NULL;
+ 
+@@ -90,8 +74,6 @@ private :
+ 	HIMAGELIST _hImalist;
+ 	bool _initDir;
+ 	HHOOK _hHooker;
+-
+-	void drawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+ };
+ 
+ 
+
+--------------2.5.3--
+
+

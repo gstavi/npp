@@ -1,7 +1,7 @@
 From 1dda09f999366b32dc8779492b2fcf7a7db978d6 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:20:26 +0300
-Subject: [PATCH 04/11] Indent change maintains indent type
+Subject: [PATCH 04/12] Indent change maintains indent type
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.5.3"
 
