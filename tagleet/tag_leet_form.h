@@ -39,7 +39,6 @@ public :
   static LRESULT APIENTRY InitialWndProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     LPARAM lParam);
   TL_ERR CreateWnd(TagLookupContext *TLCtx);
-  static HFONT CreateStatusFont();
   void PostCloseMsg() const;
 
 private:

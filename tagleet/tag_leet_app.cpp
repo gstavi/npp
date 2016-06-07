@@ -24,6 +24,8 @@
 #include <malloc.h>
 #include "resource.h"
 
+#define DEFAULT_SCREEN_HEIGHT 1024
+
 using namespace TagLEET_NPP;
 
 static TCHAR AboutText[] =
@@ -57,7 +59,8 @@ TagLeetApp::TagLeetApp(const struct NppData *NppDataObj)
   wndclass.lpszClassName  = WindowClassName;
   ::RegisterClass (&wndclass);
 
-  StatusFont = TagLeetForm::CreateStatusFont();
+  StatusFont = CreateStatusFont();
+  ListViewFont = CreateListViewFont();
 }
 
 TagLeetApp::~TagLeetApp()
@@ -91,6 +94,99 @@ void TagLeetApp::Shutdown()
   }
 
   delete this;
+}
+
+int TagLeetApp::GetScreenHeight()
+{
+  HMONITOR MonitorHndl;
+  MONITORINFO MonitorInfo;
+  DWORD res;
+
+  MonitorHndl = ::MonitorFromWindow(NppHndl, MONITOR_DEFAULTTONEAREST);
+  ::memset(&MonitorInfo, 0, sizeof(MonitorInfo));
+  MonitorInfo.cbSize = sizeof(MonitorInfo);
+  res = ::GetMonitorInfo(MonitorHndl, &MonitorInfo);
+  if (res == 0)
+  {
+    return DEFAULT_SCREEN_HEIGHT;
+  }
+  return MonitorInfo.rcWork.bottom - MonitorInfo.rcWork.top;
+}
+
+static int CALLBACK EnumFontCallback(const LOGFONT *lf, const TEXTMETRIC *,
+  DWORD, LPARAM lParam)
+{
+  *(LOGFONT *)lParam = *lf;
+  return 0;
+}
+
+HFONT TagLeetApp::CreateSpecificFont(const TCHAR **FontList, int FontListSize,
+	int Height)
+{
+  LOGFONT EnumLf, lf;
+  const TCHAR *FontName;
+  int res, i;
+
+  HDC hDC = GetDC(NULL);
+  memset(&lf, 0, sizeof(lf));
+
+  for (i = 0; i <= FontListSize; i++)
+  {
+    ::memset(&EnumLf, 0, sizeof(EnumLf));
+    FontName = (i < FontListSize) ? FontList[i] : TEXT("");
+    EnumLf.lfCharSet = ANSI_CHARSET;
+    _tcsncpy(EnumLf.lfFaceName, FontName, ARRAY_SIZE(EnumLf.lfFaceName) - 1);
+    res = ::EnumFontFamiliesEx(hDC, &EnumLf, EnumFontCallback, (LPARAM)&lf, 0);
+    if (res == 0)
+      break;
+  }
+
+  lf.lfHeight = -MulDiv(Height, ::GetDeviceCaps(hDC, LOGPIXELSY), 144);
+  lf.lfWidth = 0;
+  lf.lfWeight = FW_NORMAL;
+  return ::CreateFontIndirect(&lf);
+}
+
+HFONT TagLeetApp::CreateStatusFont()
+{
+  static const TCHAR *FontList[] = {
+    TEXT("Segoe Condensed"),
+    TEXT("DejaVu Sans Condensed"),
+    TEXT("Nina"),
+    TEXT("Kokila"),
+    TEXT("Arial Narrow"),
+    TEXT("Tahoma"),
+    TEXT("Tunga"),
+    TEXT("Times New Roman")};
+
+  StatusHeight = GetScreenHeight() / 50;
+  if (StatusHeight < 22)
+  {
+    StatusHeight = 22;
+  }
+
+  return CreateSpecificFont(FontList, ARRAY_SIZE(FontList), StatusHeight);
+}
+
+HFONT TagLeetApp::CreateListViewFont()
+{
+  static const TCHAR *FontList[] = {
+    TEXT("Times New Roman"),
+    TEXT("Arial"),
+    TEXT("FreeSans"),
+    TEXT("Tahoma"),
+    TEXT("DejaVu Sans Light"),
+    TEXT("Cousine"),
+    };
+  int FontHeight;
+
+  FontHeight = GetScreenHeight() / 60;
+  if (FontHeight < 20)
+  {
+    FontHeight = 20;
+  }
+
+  return CreateSpecificFont(FontList, ARRAY_SIZE(FontList), FontHeight);
 }
 
 void TagLeetApp::SetInstance(HINSTANCE in_InstanceHndl)

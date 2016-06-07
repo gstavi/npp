@@ -94,6 +94,8 @@ public:
   void DetachForm(TagLeetForm *Form, bool *DestroyApp);
   void ShowAbout() const;
   HFONT GetStatusFont() const { return StatusFont; }
+  HFONT GetListViewFont() const { return ListViewFont; }
+  int GetStatusHeight() const { return StatusHeight; }
   void Shutdown();
   TL_ERR GetTagsFilePath(NppCallContext *NppC, char *TagFileBuff,
   int BuffSize);
@@ -105,6 +107,12 @@ private:
   TL_ERR LastTagFileGet(TCHAR *FnBuff, int FnBuffCount) const;
   TL_ERR SelectTagInLine(NppCallContext *NppC, uint32_t LineNum,
     const char *Tag);
+  int GetScreenHeight();
+
+  HFONT CreateSpecificFont(const TCHAR **FontList, int FontListSize,
+    int Height);
+  HFONT CreateStatusFont();
+  HFONT CreateListViewFont();
 
   static HINSTANCE InstanceHndl;
   CRITICAL_SECTION CritSec;
@@ -114,7 +122,9 @@ private:
   HWND SciMainHndl;
   HWND SciSecHndl;
   TagLeetForm *Form;
+  int StatusHeight;
   HFONT StatusFont;
+  HFONT ListViewFont;
   bool DestroyOnDetachForm;
   TCHAR LastTagFile[TL_MAX_PATH];
 public:

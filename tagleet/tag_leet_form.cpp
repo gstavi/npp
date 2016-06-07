@@ -27,7 +27,6 @@
 
 #define DEFAULT_FORM_WIDTH 700
 #define DEFAULT_FORM_HEIGHT 350
-#define STATUS_HEIGHT 22
 
 using namespace TagLEET_NPP;
 
@@ -87,47 +86,6 @@ void TagLeetForm::Destroy()
   delete this;
   if (DestroyApp)
     delete CurrApp;
-}
-
-static int CALLBACK EnumFontCallback(const LOGFONT *lf, const TEXTMETRIC *,
-  DWORD, LPARAM lParam)
-{
-  *(LOGFONT *)lParam = *lf;
-  return 0;
-}
-
-HFONT TagLeetForm::CreateStatusFont()
-{
-  static const TCHAR *FontList[] = {
-    TEXT("Segoe Condensed"),
-    TEXT("Nina"),
-    TEXT("Kokila"),
-    TEXT("Arial Narrow"),
-    TEXT("Tahoma"),
-    TEXT("Tunga"),
-    TEXT("Times New Roman"),
-    TEXT("") };
-  LOGFONT EnumLf, StatusLf;
-  int res, i;
-
-  HDC hDC = GetDC(NULL);
-  memset(&StatusLf, 0, sizeof(StatusLf));
-
-  for (i = 0; i < ARRAY_SIZE(FontList); i++)
-  {
-    ::memset(&EnumLf, 0, sizeof(EnumLf));
-    EnumLf.lfCharSet = ANSI_CHARSET;
-    _tcsncpy(EnumLf.lfFaceName, FontList[i], ARRAY_SIZE(EnumLf.lfFaceName) - 1);
-    res = ::EnumFontFamiliesEx(hDC, &EnumLf, EnumFontCallback, (LPARAM)&StatusLf, 0);
-    if (res == 0)
-      break;
-  }
-
-  StatusLf.lfHeight = -MulDiv(STATUS_HEIGHT, ::GetDeviceCaps(hDC, LOGPIXELSY), 144);
-  StatusLf.lfWidth = 0;
-  StatusLf.lfWeight = FW_NORMAL;
-  //StatusLf.lfQuality = ANTIALIASED_QUALITY;
-  return ::CreateFontIndirect(&StatusLf);
 }
 
 TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
@@ -194,7 +152,9 @@ TL_ERR TagLeetForm::CreateListView(HWND hwnd)
   int rc;
   TL_ERR err = TL_ERR_OK;
   HIMAGELIST hImgList;
+  int StatusHeight = App->GetStatusHeight();
   HFONT StatusFont = App->GetStatusFont();
+  HFONT ListViewFont = App->GetListViewFont();
   LVCOLUMN LvCol;
   HWND HdrHndl;
 
@@ -206,14 +166,14 @@ TL_ERR TagLeetForm::CreateListView(HWND hwnd)
   ::GetClientRect(hwnd, &Rect);
   StatusHWnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), NULL,
     WS_CHILD | WS_VISIBLE | ES_READONLY,
-    0, Rect.bottom - STATUS_HEIGHT, Rect.right, STATUS_HEIGHT,
+    0, Rect.bottom - StatusHeight, Rect.right, StatusHeight,
     hwnd, NULL, App->GetInstance(), NULL);
   if (StatusHWnd != NULL && StatusFont != NULL)
     ::PostMessage(StatusHWnd, WM_SETFONT, (WPARAM)StatusFont, (LPARAM)0);
 
   LViewHWnd = ::CreateWindow(WC_LISTVIEW, NULL,
     WS_CHILD | LVS_REPORT | LVS_SINGLESEL | WS_VISIBLE,
-    0, 0, Rect.right, Rect.bottom - STATUS_HEIGHT,
+    0, 0, Rect.right, Rect.bottom - StatusHeight,
     hwnd, NULL, App->GetInstance(), NULL);
   if (LViewHWnd == NULL)
     return TL_ERR_GENERAL;
@@ -228,6 +188,7 @@ TL_ERR TagLeetForm::CreateListView(HWND hwnd)
       Header_SetImageList(HdrHndl, hImgList);
   }
 
+  ::SendMessage(LViewHWnd, WM_SETFONT, (WPARAM)ListViewFont, (LPARAM)0);
   ListView_SetExtendedListViewStyle(LViewHWnd, LVS_EX_FULLROWSELECT);
   ::GetClientRect(LViewHWnd, &Rect);
   LvCol.mask = LVCF_FMT | LVCF_TEXT | LVCF_SUBITEM;
