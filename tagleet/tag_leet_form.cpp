@@ -229,7 +229,7 @@ LRESULT APIENTRY TagLeetForm::InitialWndProc(HWND hwnd, UINT uMsg, WPARAM
     err = This->CreateListView(hwnd);
     return err ? -1 : 0;
   }
-  return DefWindowProc(hwnd,uMsg, wParam, lParam);
+  return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 void TagLeetForm::PostCloseMsg() const
