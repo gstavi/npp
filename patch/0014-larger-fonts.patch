@@ -1,0 +1,52 @@
+From f03f0dc039b5939ed8de5b1306e158a38823330d Mon Sep 17 00:00:00 2001
+From: gstavi <gstavi@users.noreply.github.com>
+Date: Thu, 7 Jul 2016 10:30:45 +0300
+Subject: [PATCH 14/14] larger fonts
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------2.5.3"
+
+This is a multi-part message in MIME format.
+--------------2.5.3
+Content-Type: text/plain; charset=UTF-8; format=fixed
+Content-Transfer-Encoding: 8bit
+
+
+diff --git a/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc b/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc
+index 5a19871..79da521 100644
+--- a/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc
++++ b/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc
+@@ -33,7 +33,7 @@ IDD_FUNCLIST_PANEL DIALOGEX 26, 41, 142, 324
+ STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+ EXSTYLE WS_EX_TOOLWINDOW | WS_EX_WINDOWEDGE
+ CAPTION "Function List"
+-FONT 8, "MS Sans Serif", 0, 0, 0x0
++FONT 10, "MS Sans Serif", 0, 0, 0x0
+ BEGIN
+     //PUSHBUTTON      "Reload",IDC_RELOADBUTTON_FUNCLIST, 3,3,38,14
+ 	//LISTBOX         IDC_LIST_FUNCLIST,50,44,78,120,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+diff --git a/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc b/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc
+index 72db94e..c6ad206 100644
+--- a/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc
++++ b/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc
+@@ -33,7 +33,7 @@ IDD_PROJECTPANEL DIALOGEX 26, 41, 142, 324
+ STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+ EXSTYLE WS_EX_TOOLWINDOW | WS_EX_WINDOWEDGE
+ CAPTION "Project"
+-FONT 8, "MS Sans Serif", 0, 0, 0x0
++FONT 10, "MS Sans Serif", 0, 0, 0x0
+ BEGIN
+ 	//CONTROL    "",ID_PROJECTTREEVIEW,"SysTreeView32",      TVS_HASBUTTONS | TVS_EDITLABELS |  TVS_INFOTIP | TVS_HASLINES | WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,7,172,93
+ END
+@@ -42,7 +42,7 @@ IDD_FILERELOCALIZER_DIALOG DIALOGEX 0, 0, 350, 48
+ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+ EXSTYLE WS_EX_TOOLWINDOW
+ CAPTION "Change file full path name"
+-FONT 8, "MS Shell Dlg", 400, 0, 0x1
++FONT 10, "MS Shell Dlg", 400, 0, 0x1
+ BEGIN
+     DEFPUSHBUTTON   "OK",IDOK,235,27,50,14
+     PUSHBUTTON      "Cancel",IDCANCEL,290,27,50,14
+
+--------------2.5.3--
+
+
