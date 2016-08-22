@@ -150,13 +150,12 @@ void NppCallContext::ReInit()
   if (SciEditIndex == 0)
   {
     SciHndl = App->SciMainHndl;
-    LocBank = &App->LocBankMain;
   }
   else
   {
     SciHndl = App->SciSecHndl;
-    LocBank = &App->LocBankSec;
   }
+  LocBank = &App->LocBank;
 
   SciDirectPtr = (char *)0 + SciMsg(SCI_GETDIRECTPOINTER);
   if (SciDirectPtr != NULL)

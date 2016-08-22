@@ -116,8 +116,7 @@ private:
 
   static HINSTANCE InstanceHndl;
   CRITICAL_SECTION CritSec;
-  NppLocBank LocBankMain;
-  NppLocBank LocBankSec;
+  NppLocBank LocBank;
   HWND NppHndl;
   HWND SciMainHndl;
   HWND SciSecHndl;
