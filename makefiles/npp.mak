@@ -45,7 +45,8 @@ NPP_LIBS_ms = comctl32.lib shlwapi.lib shell32.lib Oleacc.lib kernel32.lib \
 RESFLAGS_VARS = RESFLAGS
 RESFLAGS_ms = /dUNICODE
 
-XML_FILES = stylers.model.xml config.model.xml langs.model.xml shortcuts.xml
+XML_FILES = stylers.model.xml config.model.xml langs.model.xml shortcuts.xml \
+	contextMenu.xml functionList.xml userDefineLang.xml
 PRE_INSTALL_DEP = $(INSTALL_PATH)/npp_lic.txt \
 	$(addprefix $(INSTALL_PATH)/,$(XML_FILES))
 
