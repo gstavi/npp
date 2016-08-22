@@ -83,8 +83,8 @@ extern "C" __declspec(dllexport) FuncItem * getFuncsArray(int *nbF)
 {
   static ShortcutKey TagLeetShortcuts[] = {
     {false, true, false, VK_SPACE},
-    {false, true, false, 0xDB},
-    {false, true, false, 0xDD}};
+    {false, true, false, VK_LEFT},
+    {false, true, false, VK_RIGHT}};
   static struct FuncItem TagLeetFuncs[] = {
     {_T("Lookup Tag"), NppLookupTag, 0, false, TagLeetShortcuts},
     {_T("Back"),       NppGoBack,    0, false, TagLeetShortcuts + 1},
