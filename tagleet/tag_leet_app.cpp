@@ -225,7 +225,7 @@ TL_ERR TagLeetApp::GetTagsFilePath(NppCallContext *NppC, char *TagFileBuff,
   HANDLE FileHndl;
   int n;
 
-  n = ::_tcslen(NppC->Path);
+  n = (int)::_tcslen(NppC->Path);
   if (n + 16 >= ARRAY_SIZE(Path))
     return TL_ERR_TOO_BIG;
 
@@ -341,7 +341,7 @@ TlAppSync::TlAppSync(TagLeetApp *in_Obj)
 
 void TagLeetApp::LastTagFileSet(const TCHAR *TagsFileName)
 {
-  int size = (::_tcslen(TagsFileName) + 1) * sizeof(TCHAR);
+  int size = (int)((::_tcslen(TagsFileName) + 1) * sizeof(TCHAR));
 
   if (size <= sizeof(LastTagFile))
     ::memcpy(LastTagFile, TagsFileName, size);
@@ -349,7 +349,7 @@ void TagLeetApp::LastTagFileSet(const TCHAR *TagsFileName)
 
 TL_ERR TagLeetApp::LastTagFileGet(TCHAR *FnBuff, int FnBuffCount) const
 {
-  int count = ::_tcslen(LastTagFile) + 1;
+  int count = (int)::_tcslen(LastTagFile) + 1;
 
   if (count <= FnBuffCount)
   {
@@ -383,7 +383,7 @@ void TlAppSync::Lock()
 static NppLoc *NppLocAlloc(const TCHAR *CurFileName)
 {
   NppLoc *NewLoc;
-  int n = ::_tcslen(CurFileName) + 1;
+  int n = (int)::_tcslen(CurFileName) + 1;
   int m = ARRAY_SIZE(NewLoc->FnStorage);
   int AllocSize = sizeof(NppLoc);
 
@@ -490,7 +490,7 @@ int TagLEET_NPP::TSTR_to_str(const TCHAR *Str, int StrSize, char *Buff,
   int n = 0;
 
   if (StrSize == -1)
-    StrSize = ::_tcslen(Str);
+    StrSize = (int)::_tcslen(Str);
 
   if (StrSize > 0)
   {
@@ -516,7 +516,7 @@ int TagLEET_NPP::str_to_TSTR(const char *Str, int StrSize, TCHAR *Buff,
   int n = 0;
 
   if (StrSize == -1)
-    StrSize = ::strlen(Str);
+    StrSize = (int)::strlen(Str);
 
   if (StrSize > 0)
   {

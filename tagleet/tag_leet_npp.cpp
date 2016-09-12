@@ -165,10 +165,10 @@ void NppCallContext::ReInit()
       SciDirectFunc = reinterpret_cast<int (*)(void *, int, int, int)>(ptr);
   }
 
-  Pos = SciMsg(SCI_GETSELECTIONSTART);
-  Loc.I.LineNum = SciMsg(SCI_LINEFROMPOSITION, Pos);
-  Loc.I.TopVisibleLine = SciMsg(SCI_GETFIRSTVISIBLELINE, Pos);
-  LineStartPos = SciMsg(SCI_POSITIONFROMLINE, Loc.I.LineNum);
+  Pos = (int)SciMsg(SCI_GETSELECTIONSTART);
+  Loc.I.LineNum = (uint32_t)SciMsg(SCI_LINEFROMPOSITION, Pos);
+  Loc.I.TopVisibleLine = (int32_t)SciMsg(SCI_GETFIRSTVISIBLELINE, Pos);
+  LineStartPos = (int)SciMsg(SCI_POSITIONFROMLINE, Loc.I.LineNum);
   Loc.I.XPos = Pos > LineStartPos ? Pos - LineStartPos : 0;
   NppMsg(NPPM_GETFULLCURRENTPATH, ARRAY_SIZE(Path), (LPARAM)Path);
   Loc.FileName = Path;
@@ -176,7 +176,8 @@ void NppCallContext::ReInit()
 
 LRESULT NppCallContext::SciMsg(int Msg, WPARAM wParam, LPARAM lParam)
 {
-  return SciDirectFunc != NULL ? SciDirectFunc(SciDirectPtr, Msg, wParam, lParam) :
+  return SciDirectFunc != NULL ?
+    SciDirectFunc(SciDirectPtr, Msg, (int)wParam, (int)lParam) :
     SciHndl != NULL ? (int)::SendMessage(SciHndl, Msg, wParam, lParam) : 0;
 }
 
@@ -257,7 +258,7 @@ void TagLeetApp::InitHandles(const struct NppData *NppDataObj)
 
 TL_ERR TagLeetApp::GoToFileLine(const NppLoc *Loc, const char *Tag)
 {
-  int res;
+  LRESULT res;
   TL_ERR err;
   uint32_t LinesOnScreen;
   uint32_t TopVisibleLine;
@@ -269,13 +270,13 @@ TL_ERR TagLeetApp::GoToFileLine(const NppLoc *Loc, const char *Tag)
     return TL_ERR_GENERAL;
 
   NppC.ReInit();
-  LinesOnScreen = NppC.SciMsg(SCI_LINESONSCREEN);
+  LinesOnScreen = (uint32_t)NppC.SciMsg(SCI_LINESONSCREEN);
   if (LinesOnScreen > 100)
     LinesOnScreen = 20;
   else if (LinesOnScreen < 1)
     LinesOnScreen = 2;
 
-  TopVisibleLine = NppC.SciMsg(SCI_GETFIRSTVISIBLELINE);
+  TopVisibleLine = (uint32_t)NppC.SciMsg(SCI_GETFIRSTVISIBLELINE);
 
   err = Tag == NULL ? TL_ERR_NOT_EXIST :
     SelectTagInLine(&NppC, Loc->I.LineNum, Tag);
@@ -283,8 +284,8 @@ TL_ERR TagLeetApp::GoToFileLine(const NppLoc *Loc, const char *Tag)
   if (err)
   {
     int SciLineSize, Pos;
-    Pos = NppC.SciMsg(SCI_POSITIONFROMLINE, Loc->I.LineNum);
-    SciLineSize = NppC.SciMsg(SCI_GETLINE, Loc->I.LineNum);
+    Pos = (int)NppC.SciMsg(SCI_POSITIONFROMLINE, Loc->I.LineNum);
+    SciLineSize = (int)NppC.SciMsg(SCI_GETLINE, Loc->I.LineNum);
     if (Loc->I.XPos < (uint32_t)SciLineSize)
       Pos += Loc->I.XPos;
     NppC.SciMsg(SCI_GOTOPOS, Pos);
@@ -317,11 +318,11 @@ TL_ERR TagLeetApp::GoToFileLine(const NppLoc *Loc, const char *Tag)
 TL_ERR TagLeetApp::SelectTagInLine(NppCallContext *NppC, uint32_t LineNum,
   const char *Tag)
 {
-  int TagLength = ::strlen(Tag);
+  int TagLength = (int)::strlen(Tag);
   char Buff[1024], *Line;
   int SciLineSize, LineStartPos, i;
 
-  SciLineSize = NppC->SciMsg(SCI_GETLINE, LineNum);
+  SciLineSize = (int)NppC->SciMsg(SCI_GETLINE, LineNum);
   Line = SciLineSize < TagLength || SciLineSize > 256*1024 ? NULL :
     SciLineSize < sizeof(Buff) ? Buff : (char *)::malloc(SciLineSize);
   if (Line == NULL)
@@ -338,7 +339,7 @@ TL_ERR TagLeetApp::SelectTagInLine(NppCallContext *NppC, uint32_t LineNum,
   if (i + TagLength > SciLineSize)
     return TL_ERR_NOT_EXIST;
 
-  LineStartPos = NppC->SciMsg(SCI_POSITIONFROMLINE, LineNum);
+  LineStartPos = (int)NppC->SciMsg(SCI_POSITIONFROMLINE, LineNum);
   NppC->UpdateSelection(LineStartPos + i, LineStartPos + i + TagLength);
   return TL_ERR_OK;
 }
@@ -352,21 +353,21 @@ TagLookupContext::TagLookupContext(NppCallContext *in_NppC,
   int Start, End;
   Sci_TextRange tr;
 
-  Start = NppC->SciMsg(SCI_GETSELECTIONSTART);
-  End = NppC->SciMsg(SCI_GETSELECTIONEND);
+  Start = (int)NppC->SciMsg(SCI_GETSELECTIONSTART);
+  End = (int)NppC->SciMsg(SCI_GETSELECTIONEND);
   if (Start >= End)
   {
     NewSelection = true;
-    int Pos = NppC->SciMsg(SCI_GETCURRENTPOS);
-    Start = NppC->SciMsg(SCI_WORDSTARTPOSITION, Pos, true);
-    End = NppC->SciMsg(SCI_WORDENDPOSITION, Pos, true);
+    int Pos = (int)NppC->SciMsg(SCI_GETCURRENTPOS);
+    Start = (int)NppC->SciMsg(SCI_WORDSTARTPOSITION, Pos, true);
+    End = (int)NppC->SciMsg(SCI_WORDENDPOSITION, Pos, true);
     if (Start >= End)
       Start = End = Pos;
   }
 
-  LineNum = NppC->SciMsg(SCI_LINEFROMPOSITION, Start);
-  LineStartPos = NppC->SciMsg(SCI_POSITIONFROMLINE, LineNum);
-  LineEndPos = NppC->SciMsg(SCI_GETLINEENDPOSITION, LineNum);
+  LineNum = (int)NppC->SciMsg(SCI_LINEFROMPOSITION, Start);
+  LineStartPos = (int)NppC->SciMsg(SCI_POSITIONFROMLINE, LineNum);
+  LineEndPos = (int)NppC->SciMsg(SCI_GETLINEENDPOSITION, LineNum);
 
   TextStartPos = Start;
   if (Start == End || Start < LineStartPos || End > LineEndPos)
@@ -385,7 +386,7 @@ TagLookupContext::TagLookupContext(NppCallContext *in_NppC,
   tr.chrg.cpMin = Start;
   tr.chrg.cpMax = Start + TextLength;
   tr.lpstrText = TextBuff;
-  TextLength = NppC->SciMsg(SCI_GETTEXTRANGE, 0, (LPARAM)&tr);
+  TextLength = (int)NppC->SciMsg(SCI_GETTEXTRANGE, 0, (LPARAM)&tr);
   TagOffset = 0;
   TagLength = End - Start;
 }
@@ -396,7 +397,7 @@ NppFileLineIterator::NppFileLineIterator(TagLeetApp *App, const char *FileName):
   CurrLineNum(1)
 {
   TCHAR FileNameBuff[TL_MAX_PATH];
-  int res;
+  LRESULT res;
 
   LineBuff = LocalBuff;
   LineBuffSize = sizeof(LocalBuff);
@@ -426,11 +427,11 @@ TL_ERR NppFileLineIterator::MoveToLine(int LineNum)
   if (InitErr)
     return InitErr;
 
-  LineCount = NppC.SciMsg(SCI_GETLINECOUNT);
+  LineCount = (int)NppC.SciMsg(SCI_GETLINECOUNT);
   if (LineNum > LineCount)
     return TL_ERR_NOT_EXIST;
 
-  SciLineSize = NppC.SciMsg(SCI_GETLINE, LineNum);
+  SciLineSize = (int)NppC.SciMsg(SCI_GETLINE, LineNum);
   if (SciLineSize + 1 > LineBuffSize)
   {
     uint32_t AllocSize = (SciLineSize + 0x400) & ~0x3FF;

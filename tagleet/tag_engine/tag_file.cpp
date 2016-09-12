@@ -481,7 +481,7 @@ char *TfAllocator::StrDup(const char *Str, int32_t StrSize)
 
   if (StrSize <= 0)
   {
-    int32_t n = ::strlen(Str);
+    int32_t n = (uint32_t)::strlen(Str);
     StrSize = StrSize == 0 || n <= -StrSize ? n : -StrSize;
   }
 

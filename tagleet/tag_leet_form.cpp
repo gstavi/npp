@@ -296,25 +296,25 @@ int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
     {
       case COLUMN_TAG:
         str1 = Item1->Tag;
-        length1 = ::strlen(str1);
+        length1 = (int)::strlen(str1);
         str2 = Item2->Tag;
-        length2 = ::strlen(str2);
+        length2 = (int)::strlen(str2);
         break;
       case COLUMN_FILENAME:
         str1 = Item1->FileName;
-        length1 = ::strlen(str1);
+        length1 = (int)::strlen(str1);
         ::FileFromPath(&str1, &length1);
         str2 = Item2->FileName;
-        length2 = ::strlen(str2);
+        length2 = (int)::strlen(str2);
         ::FileFromPath(&str2, &length2);
         break;
         break;
       case COLUMN_EXCMD:
         str1 = Item1->ExCmd;
-        length1 = ::strlen(str1);
+        length1 = (int)::strlen(str1);
         ::CleanExCmd(&str1, &length1);
         str2 = Item2->ExCmd;
-        length2 = ::strlen(str2);
+        length2 = (int)::strlen(str2);
         ::CleanExCmd(&str2, &length2);
         break;
       default:
@@ -483,7 +483,7 @@ void TagLeetForm::SetItemText(int ColumnIdx, int SubItem, const char *Str,
   int *Width, void (*ModifyStr)(const char **Str, int *StrSize))
 {
   LVITEM LvItem;
-  int StrSize = ::strlen(Str);
+  int StrSize = (int)::strlen(Str);
   TCHAR TmpStr[300];
 
   if (ModifyStr != NULL)

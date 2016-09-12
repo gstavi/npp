@@ -151,7 +151,7 @@ const char *TagList::FixExCmd(const char *ExCmd)
   if (ExCmd[i] == '\0')
     return ExCmd;
 
-  NewStr = (char *)StrMem.Alloc(::strlen(ExCmd) + 1);
+  NewStr = (char *)StrMem.Alloc((uint32_t)::strlen(ExCmd) + 1);
   if (NewStr == NULL)
     return ExCmd;
 
@@ -248,7 +248,7 @@ TL_ERR TagList::OpenSrcFile(
   bool IsAbs = IsAbsolutePath(Item->FileName);
   TL_ERR err;
 
-  n = ::strlen(Item->FileName);
+  n = (uint32_t)::strlen(Item->FileName);
   if (IsAbs)
   {
     if (n + 1 > BuffSize)
@@ -264,7 +264,7 @@ TL_ERR TagList::OpenSrcFile(
   if (TagsFilePath == NULL)
     return TL_ERR_GENERAL;
 
-  i = ::strlen(TagsFilePath);
+  i = (uint32_t)::strlen(TagsFilePath);
   while (i > 0)
   {
     i--;
@@ -303,8 +303,8 @@ static TL_ERR IsLineNumber(const char *ExCmd, uint32_t *LineNumber)
 
 static uint32_t find_tag_in_ex_cmd(const char *Tag, const char *ExCmd)
 {
-  uint32_t ExCmdSize = ::strlen(ExCmd);
-  uint32_t TagSize = ::strlen(Tag);
+  uint32_t ExCmdSize = (uint32_t)::strlen(ExCmd);
+  uint32_t TagSize = (uint32_t)::strlen(Tag);
   uint32_t i;
 
   for (i = 0; i + TagSize <= ExCmdSize; i++)
@@ -384,7 +384,7 @@ TL_ERR TagList::DoFindLineNumberInFile(
 
   bool FromStart = false;
   bool ToEnd = false;
-  uint32_t ExCmdSize = ::strlen(ExCmd);
+  uint32_t ExCmdSize = (uint32_t)::strlen(ExCmd);
   if (ExCmdSize >= 2 && ExCmd[0] == '/' && ExCmd[1] == '^')
   {
     ExCmd += 2;
