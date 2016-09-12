@@ -178,7 +178,7 @@ LRESULT NppCallContext::SciMsg(int Msg, WPARAM wParam, LPARAM lParam)
 {
   return SciDirectFunc != NULL ?
     SciDirectFunc(SciDirectPtr, Msg, (int)wParam, (int)lParam) :
-    SciHndl != NULL ? (int)::SendMessage(SciHndl, Msg, wParam, lParam) : 0;
+    SciHndl != NULL ? ::SendMessage(SciHndl, Msg, wParam, lParam) : 0;
 }
 
 LRESULT NppCallContext::NppMsg(int Msg, WPARAM wParam, LPARAM lParam)
