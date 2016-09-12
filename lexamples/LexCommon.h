@@ -89,7 +89,7 @@ protected:
   if (*lastProp != NULL) { \
     (*lastProp)->name = NAME; \
     (*lastProp)->desc = DESC; \
-    (*lastProp)->offset = (char *)(&this->F) - (char *)&this->LexerCommon::propList; \
+    (*lastProp)->offset = (int)((char *)(&this->F) - (char *)&this->LexerCommon::propList); \
     (*lastProp)->type = LexerCommon::Property::TypeOfProp(&this->F); \
     (*lastProp)->next = NULL; \
     lastProp = &((*lastProp)->next);}

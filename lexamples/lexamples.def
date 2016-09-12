@@ -1,13 +1,7 @@
 LIBRARY   lexamples
 EXPORTS
-  setInfo @1
-  getName @2
-  getFuncsArray @3
-  beNotified @4
-  messageProc @5
-  isUnicode @6
-  GetLexerCount @7
-  GetLexerName @8
-  GetLexerStatusText @9
-  GetLexerFactory @10
+  GetLexerCount @1
+  GetLexerName @2
+  GetLexerStatusText @3
+  GetLexerFactory @4
  
