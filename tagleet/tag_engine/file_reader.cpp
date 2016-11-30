@@ -64,7 +64,7 @@ TL_ERR ReaderBuff::Init(FileReader *in_fr, tf_int_t in_Offset, uint32_t in_Size)
 
   if (Offset + Size > fr->FileSize)
   {
-    Size = (uint32_t)(fr->FileSize - Offset);
+    Size = Offset >= fr->FileSize ? 0 : (uint32_t)(fr->FileSize - Offset);
     if (Size == 0)
       return TL_ERR_NO_MORE;
   }
@@ -91,7 +91,7 @@ TL_ERR ReaderBuff::Init(FileReader *in_fr, tf_int_t in_Offset, uint32_t in_Size)
 
 void ReaderBuff::Release()
 {
-  if ( Buff == NULL)
+  if (Buff == NULL)
     return;
 
   if (IsMapped)

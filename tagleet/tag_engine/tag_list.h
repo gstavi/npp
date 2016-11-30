@@ -90,6 +90,7 @@ public:
   uint32_t LineNumFromTag;
   const char *TagForLineNum;
   const char *TagsFilePath;
+  bool TagsCaseInsensitive;
 
 private:
   TL_ERR DoFindLineNumberInFile(

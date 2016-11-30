@@ -266,12 +266,12 @@ void TagLeetApp::LookupTag()
   TlAppSync Sync(this);
   NppCallContext NppC(this);
   char TagsFilePath[TL_MAX_PATH];
+  TCHAR Msg[2048];
   int i;
 
   err = GetTagsFilePath(&NppC, TagsFilePath, sizeof(TagsFilePath));
   if (err)
   {
-    TCHAR Msg[2048];
     ::_sntprintf(Msg, ARRAY_SIZE(Msg),
       TEXT("'tags' file not found on path of:\n%s"), NppC.Path);
     ::MessageBox(NppHndl, Msg, TEXT("TagLEET"), MB_ICONEXCLAMATION);
@@ -294,8 +294,24 @@ void TagLeetApp::LookupTag()
   }
 
   Form = new TagLeetForm(&NppC);
-  if (Form != NULL)
-    Form->CreateWnd(&TLCtx);
+  if (Form == NULL)
+    return;
+
+  err = Form->CreateWnd(&TLCtx);
+  if (!err)
+    return;
+
+  switch (err)
+  {
+    case TL_ERR_SORT:
+      ::_sntprintf(Msg, ARRAY_SIZE(Msg), TEXT("Unsorted tags file: %hs"), TagsFilePath);
+      break;
+    default:
+      ::_sntprintf(Msg, ARRAY_SIZE(Msg), TEXT("unexpected error(%u)"),
+        (unsigned)err);
+      break;
+  }
+  ::MessageBox(NppHndl, Msg, TEXT("TagLEET"), MB_ICONEXCLAMATION);
 }
 
 void TagLeetApp::GoBack()

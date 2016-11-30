@@ -25,6 +25,7 @@
 #include <memory.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 using namespace TagLEET;
 
@@ -52,13 +53,14 @@ struct TagLEET::TfPageDesc
 };
 
 /* AVL callback to compare nodes in the Tag File Descriptor tree */
-static int tag_tree_comp_func(void *, avl_node_t *node, void *key)
+int TagFile::tag_tree_comp_func(void *ctx, avl_node_t *node, void *key)
 {
+  TagFile *tf = reinterpret_cast<TagFile *>(ctx);
   int res;
   TagStrRef *Tag = (TagStrRef *)key;
   TfPageDesc *Desc = AVL_CONTREC(node, TfPageDesc, Node);
 
-  res = strncmp(Desc->TagStr, Tag->Str, Tag->Size);
+  res = tf->StrnCmp(Desc->TagStr, Tag->Str, Tag->Size);
   return res != 0 ? res : Desc->TagStr[Tag->Size] == '\0' ? 0 : 1;
 }
 
@@ -66,11 +68,15 @@ static int tag_tree_comp_func(void *, avl_node_t *node, void *key)
 
 TagFile::TagFile():
   DescAllocator(4096, sizeof_max(void *, tf_int_t)),
-  TagStrAllocator(4*1024, 1)
+  TagStrAllocator(4*1024, 1),
+  StrCmp(::strcmp),
+  StrnCmp(::strncmp),
+  CaseInsensitive(false)
 {
   PageSize = 8*1024;
   ::memset(&LookupTree, 0, sizeof(LookupTree));
   LookupTree.comp = tag_tree_comp_func;
+  LookupTree.ctx = this;
   fr = NULL;
 };
 
@@ -81,6 +87,108 @@ TagFile::~TagFile()
     delete fr;
   }
 };
+
+static TL_ERR read_tag_int(ReaderBuff *Rb, uint32_t *val_ptr)
+{
+  const char *Line;
+  uint32_t i, val, digit;
+  TL_ERR err = TL_ERR_INVALID;
+
+  Line = (char *)Rb->Buff + Rb->LineOffset;
+  i = Rb->TagSize;
+
+  /* Skip whitespace. */
+  while (i < Rb->LineSize)
+  {
+    if (Line[i] != ' ' && Line[i] != '\t')
+      break;
+    i++;
+  }
+
+  val = 0;
+  while (i < Rb->LineSize)
+  {
+    if (Line[i] < '0' || Line[i] > '9')
+      break;
+
+    digit = Line[i++] - '0';
+    val *= 10;
+    val += digit;
+    err = TL_ERR_OK;
+  }
+
+  if (!err)
+    *val_ptr = val;
+
+  return err;
+}
+
+TL_ERR TagFile::Process_FILE_SORTED_flag(ReaderBuff *Rb)
+{
+  TL_ERR err;
+  uint32_t val;
+
+  err = read_tag_int(Rb, &val);
+  if (err)
+    return TL_ERR_OK;
+
+  switch (val)
+  {
+  case 0: /* Unsorted */
+    return TL_ERR_SORT;
+
+  case 2: /* Case insensitive. */
+    CaseInsensitive = true;
+    StrCmp = ::_stricmp;
+    StrnCmp = ::_strnicmp;
+    break;
+
+  default:
+    break;
+  }
+
+  return TL_ERR_OK;
+}
+
+TL_ERR TagFile::TestCaseSensitivity()
+{
+  static const char TagsSortedFlag[] = "!_TAG_FILE_SORTED";
+  ReaderBuff Rb;
+  const char *Line;
+  TL_ERR err;
+  uint32_t LineCount;
+  int res;
+
+  err = Rb.Init(fr, 0, 1024);
+  if (err)
+    return err;
+
+  LineCount = 0;
+  while (LineCount < 5)
+  {
+    err = Rb.FindNextFullLine();
+    if (err)
+      return TL_ERR_OK;
+
+    Line = (char *)Rb.Buff + Rb.LineOffset;
+    if (Rb.TagSize == sizeof(TagsSortedFlag) - 1)
+    {
+      res = ::memcmp(Line, TagsSortedFlag, Rb.TagSize);
+      if (res == 0)
+      {
+        err = Process_FILE_SORTED_flag(&Rb);
+        break;
+      }
+    }
+
+    if (Rb.TagSize > 0 && Line[0] != '!')
+      break;
+
+    LineCount++;
+  }
+
+  return err;
+}
 
 TL_ERR TagFile::CommonInit(const wchar_t *FileNameW, const char *FileNameA)
 {
@@ -104,6 +212,9 @@ TL_ERR TagFile::CommonInit(const wchar_t *FileNameW, const char *FileNameA)
     err = fr->Open(FileNameW, true);
   else
     err = fr->Open(FileNameA, true);
+
+  if (!err)
+    err = TestCaseSensitivity();
 
   if (err)
   {
@@ -375,7 +486,7 @@ TL_ERR TagFile::Lookup(const char *TagStr, tf_int_t *RangeStart,
     NewDesc = AddNewPageToTree(NewPageOffset);
     if (NewDesc == NULL)
       return TL_ERR_GENERAL;
-    res = ::strcmp(NewDesc->TagStr, Tag.Str);
+    res = StrCmp(NewDesc->TagStr, Tag.Str);
     if (res <= 0)
     {
       /* Tag is in the range [NewDesc]-[D2]. Move [D1] to [NewDesc] */
@@ -397,7 +508,7 @@ TL_ERR TagFile::Lookup(const char *TagStr, tf_int_t *RangeStart,
     *RangeStart = *RangeSize = 0;
     return TL_ERR_OK;
   }
-  if (::strcmp(D1->TagStr, Tag.Str) != 0)
+  if (StrCmp(D1->TagStr, Tag.Str) != 0)
   {
     /* Tag is in D1 - this is the most common scenario */
     *RangeStart = D1->Offset;
@@ -506,11 +617,33 @@ TagIterator::TagIterator(bool in_MatchPrefix)
   TagSize = 0;
   LineCount = 0;
   MatchPrefix = in_MatchPrefix;
+  MemCmp = ::memcmp;
 }
 
 TagIterator::~TagIterator()
 {
   Release();
+}
+
+/* Implement case insensitive mem compare.
+ * It seems that for Windows memicmp will sort '_' before letters as if all
+ * letters are lower case while ctags sorts '_' after letters as if all
+ * letters are upper case. */
+int TagLEET::memicmp(const void *s1, const void *s2, size_t n)
+{
+  const uint8_t *str1 = (const uint8_t *)s1;
+  const uint8_t *str2 = (const uint8_t *)s2;
+  size_t i;
+  int c1, c2;
+
+  for (i = 0; i < n; i++)
+  {
+    c1 = toupper(str1[i]);
+    c2 = toupper(str2[i]);
+    if (c1 != c2)
+      return c1 - c2;
+  }
+  return 0;
 }
 
 TL_ERR TagIterator::Init(TagFile *tf, const char *in_TagStr, uint32_t ReadSize)
@@ -519,6 +652,8 @@ TL_ERR TagIterator::Init(TagFile *tf, const char *in_TagStr, uint32_t ReadSize)
   tf_int_t Base = 0;
   tf_int_t Size = 0;
 
+  if (tf->IsCaseInsensitive())
+    MemCmp = TagLEET::memicmp;
   TagStr = ::_strdup(in_TagStr);
   err = TagStr == NULL ? TL_ERR_MEM_ALLOC : TL_ERR_OK;
   if (!err)
@@ -577,13 +712,13 @@ TL_ERR TagIterator::GetNextTagLine(const char **Line, uint32_t *LineSize)
 
     if (rb.TagSize >= TagSize)
     {
-      res = ::memcmp(rb.Buff + rb.LineOffset, TagStr, TagSize);
+      res = MemCmp(rb.Buff + rb.LineOffset, TagStr, TagSize);
       if (res == 0 && rb.TagSize > TagSize)
         res = MatchPrefix ? 0 : 1;
     }
     else
     {
-      res = ::memcmp(rb.Buff + rb.LineOffset, TagStr, rb.TagSize);
+      res = MemCmp(rb.Buff + rb.LineOffset, TagStr, rb.TagSize);
       if (res == 0)
         res = -1;
     }

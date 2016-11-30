@@ -98,6 +98,7 @@ TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
   int FormWidth = DEFAULT_FORM_WIDTH;
   int FormHeight = DEFAULT_FORM_HEIGHT;
   DWORD res;
+  TL_ERR err;
 
   BackLoc.FileName = ::_tcsdup(NppC->Path);
   BackLoc.I = NppC->Loc.I;
@@ -135,7 +136,13 @@ TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
     return TL_ERR_GENERAL;
 
   UpdateColumnWidths(0, 0, 0);
-  SetListFromTag(TLCtx);
+  err = SetListFromTag(TLCtx);
+  if (err)
+  {
+    PostCloseMsg();
+    return err;
+  }
+  
   SetColumnSortArrow(SortOrder[0] & 0x7F, true,
     SortOrder[0] & 0x80 ? true : false);
 
@@ -285,6 +292,7 @@ int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
   TagList::TagListItem *Item1 = (TagList::TagListItem *)Item1Ptr;
   TagList::TagListItem *Item2 = (TagList::TagListItem *)Item2Ptr;
   TagLeetForm *Form = reinterpret_cast<TagLeetForm *>(FormPtr);
+  bool case_insensitive = false;
   int i;
 
   for (i = 0; i < ARRAY_SIZE(Form->SortOrder); i++)
@@ -299,6 +307,7 @@ int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
         length1 = (int)::strlen(str1);
         str2 = Item2->Tag;
         length2 = (int)::strlen(str2);
+        case_insensitive = Form->TList.TagsCaseInsensitive;
         break;
       case COLUMN_FILENAME:
         str1 = Item1->FileName;
@@ -320,7 +329,10 @@ int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
       default:
         continue;
     }
-    CompVal = memcmp(str1, str2, length1 <= length2 ? length1 : length2);
+
+    CompVal = case_insensitive ?
+      TagLEET::memicmp(str1, str2, length1 <= length2 ? length1 : length2) :
+      ::memcmp(str1, str2, length1 <= length2 ? length1 : length2);
     if (CompVal == 0 && length1 != length2)
       CompVal = length1 < length2 ? -1 : 1;
     if (CompVal != 0)

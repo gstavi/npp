@@ -67,13 +67,22 @@ private:
   TL_ERR GetEolSize(uint32_t EolOffset, uint32_t *EolSize);
 
 public:
+  /* Buffer to file data. Either to mapped data or allocated buffer with data
+   * that was read. */
   uint8_t *Buff;
+  /* Number of valid mapped bytes or allocated bytes in 'Buff'. */
   uint32_t Size;
+  /* Indication if 'Buff' is mapped (true) or allocated (false). */
   bool IsMapped;
+  /* Offset in bytes from start of 'Buff' to beginning of current line. */
   uint32_t LineOffset;
+  /* Offset in bytes from start of 'Buff' to beginning of next line. */
   uint32_t NextLineOffset;
+  /* Size in bytes of current line excluding end of line bytes. */
   uint32_t LineSize;
+  /* Size in bytes of tag in current line. */
   uint32_t TagSize;
+  /* Offset in bytes into file to which 'Buff' refers. */
   tf_int_t Offset;
   FileReader *fr;
 };

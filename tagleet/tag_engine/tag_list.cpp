@@ -100,6 +100,8 @@ TL_ERR TagList::Create(const char *Tag, const char *in_TagsFilePath,
   if (err)
     return err;
 
+  TagsCaseInsensitive = cache->IsCaseInsensitive();
+
   while (Count < MaxItemCount)
   {
     uint32_t ExCmdCopySize;

@@ -65,14 +65,18 @@ public:
     tf_int_t *RangeSize);
   void CloseFile();
   TL_ERR ReopenFile();
-  FileReader *GetFileReader() const { return fr; };
+  FileReader *GetFileReader() const { return fr; }
+  bool IsCaseInsensitive() const { return CaseInsensitive; }
 
 private:
   TL_ERR CommonInit(const wchar_t *FileNameW, const char *FileNameA);
+  TL_ERR TestCaseSensitivity();
+  TL_ERR Process_FILE_SORTED_flag(ReaderBuff *Rb);
   TfPageDesc *AddNewPageToTree(tf_int_t Offset);
   TfPageDesc *AllocDesc(const TagStrRef *Tag);
   TL_ERR GrowDescBackward(TfPageDesc **Desc);
   TL_ERR TestSort(tf_int_t Offset, avl_loc_t *loc) const;
+  static int tag_tree_comp_func(void *ctx, avl_node_t *node, void *key);
 
 private:
   uint32_t PageSize;
@@ -80,6 +84,9 @@ private:
   FileReader *fr;
   TfAllocator DescAllocator;
   TfAllocator TagStrAllocator;
+  int (*StrCmp)(const char *s1, const char *s2);
+  int (*StrnCmp)(const char *s1, const char *s2, size_t n);
+  bool CaseInsensitive;
 };
 
 enum TagKind {
@@ -134,7 +141,10 @@ private:
   uint32_t LineCount;
   bool IsFirstLine;
   bool MatchPrefix;
+  int (*MemCmp)(const void *s1, const void *s2, size_t n);
 };
+
+int memicmp(const void *s1, const void *s2, size_t n);
 
 } /* namespace TagLEET */
 
