@@ -19,11 +19,11 @@ BEGIN
   BEGIN
     BLOCK "040904b0"
       BEGIN
-        VALUE "CompanyName",       "Gur Stavi gstavi@gmail.com\0"
+        VALUE "CompanyName",       "Gur Stavi gur.stavi@gmail.com\0"
         VALUE "FileDescription",   "TagLEET - ctags plugin for Notepad++\0"
         VALUE "FileVersion",       VERSION_TAGLEET "\0"
         VALUE "InternalName",      "TagLEET\0"
-        VALUE "LegalCopyright",    "Copyright 2014 by Gur Stavi\0"
+        VALUE "LegalCopyright",    "Copyright 2014-2016 by Gur Stavi\0"
         VALUE "OriginalFilename",  "TagLEET.dll\0"
         VALUE "ProductName",       "TagLEET\0"
         VALUE "ProductVersion",    VERSION_TAGLEET "\0"

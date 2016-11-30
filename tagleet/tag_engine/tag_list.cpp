@@ -303,17 +303,20 @@ static TL_ERR IsLineNumber(const char *ExCmd, uint32_t *LineNumber)
   return TL_ERR_INVALID;
 }
 
-static uint32_t find_tag_in_ex_cmd(const char *Tag, const char *ExCmd)
+uint32_t TagList::FindTagInExCmd(const char *Tag, const char *ExCmd)
 {
   uint32_t ExCmdSize = (uint32_t)::strlen(ExCmd);
   uint32_t TagSize = (uint32_t)::strlen(Tag);
+  int (*MemCmp)(const void *s1, const void *s2, size_t n);
   uint32_t i;
+
+  MemCmp = TagsCaseInsensitive ? TagLEET::memicmp : ::memcmp;
 
   for (i = 0; i + TagSize <= ExCmdSize; i++)
   {
     if (ExCmd[i] != Tag[0])
       continue;
-    if (::memcmp(ExCmd + i, Tag, TagSize) == 0)
+    if (MemCmp(ExCmd + i, Tag, TagSize) == 0)
       return i + TagSize;
   }
   return 0;
@@ -328,9 +331,11 @@ TL_ERR TagList::FindLineNumberInFile(
   const char *ExCmd;
   uint32_t LineNumber;
   uint32_t PrefixSize;
+  int (*StrCmp)(const char *s1, const char *s2);
 
+  StrCmp = TagsCaseInsensitive ? ::_stricmp : ::strcmp;
   if (Item->Kind == TAG_KIND_FILE && LineNumFromTag > 0 &&
-    TagForLineNum != NULL && ::strcmp(TagForLineNum, Item->Tag) == 0)
+    TagForLineNum != NULL && StrCmp(TagForLineNum, Item->Tag) == 0)
   {
     *out_LineNumber = LineNumFromTag - 1;
     return TL_ERR_OK;
@@ -349,7 +354,7 @@ TL_ERR TagList::FindLineNumberInFile(
     return err;
   /* Perhaps line changed slightly. Find tag in ExCmd and then re-search file
    * For the prefix of ExCmd up until the tag */
-  PrefixSize = find_tag_in_ex_cmd(Item->Tag, ExCmd);
+  PrefixSize = FindTagInExCmd(Item->Tag, ExCmd);
   if (PrefixSize > 0)
   {
     char TmpBuff[256];

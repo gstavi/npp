@@ -98,6 +98,7 @@ private:
     IN  const char *ExCmd,
     OUT uint32_t *out_LineNumber);
   const char *FixExCmd(const char *ExCmd);
+  uint32_t FindTagInExCmd(const char *Tag, const char *ExCmd);
 
   TfAllocator NodeMem;
   TfAllocator StrMem;
