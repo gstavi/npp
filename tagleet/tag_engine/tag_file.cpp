@@ -139,8 +139,8 @@ TL_ERR TagFile::Process_FILE_SORTED_flag(ReaderBuff *Rb)
 
   case 2: /* Case insensitive. */
     CaseInsensitive = true;
-    StrCmp = ::_stricmp;
-    StrnCmp = ::_strnicmp;
+    StrCmp = TagLEET::stricmp;
+    StrnCmp = TagLEET::strnicmp;
     break;
 
   default:
@@ -642,6 +642,40 @@ int TagLEET::memicmp(const void *s1, const void *s2, size_t n)
     c2 = toupper(str2[i]);
     if (c1 != c2)
       return c1 - c2;
+  }
+  return 0;
+}
+
+int TagLEET::strnicmp(const char *str1, const char *str2, size_t n)
+{
+  size_t i;
+  int c1, c2;
+
+  for (i = 0; i < n; i++)
+  {
+    c1 = toupper(str1[i]);
+    c2 = toupper(str2[i]);
+    if (c1 != c2)
+      return c1 - c2;
+    if (c1 == 0)
+      break;
+  }
+  return 0;
+}
+
+int TagLEET::stricmp(const char *str1, const char *str2)
+{
+  size_t i;
+  int c1, c2;
+
+  for (i = 0; ; i++)
+  {
+    c1 = toupper(str1[i]);
+    c2 = toupper(str2[i]);
+    if (c1 != c2)
+      return c1 - c2;
+    if (c1 == 0)
+      break;
   }
   return 0;
 }

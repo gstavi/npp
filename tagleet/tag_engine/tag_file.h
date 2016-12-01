@@ -145,6 +145,8 @@ private:
 };
 
 int memicmp(const void *s1, const void *s2, size_t n);
+int strnicmp(const char *str1, const char *str2, size_t n);
+int stricmp(const char *str1, const char *str2);
 
 } /* namespace TagLEET */
 

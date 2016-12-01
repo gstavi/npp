@@ -333,7 +333,7 @@ TL_ERR TagList::FindLineNumberInFile(
   uint32_t PrefixSize;
   int (*StrCmp)(const char *s1, const char *s2);
 
-  StrCmp = TagsCaseInsensitive ? ::_stricmp : ::strcmp;
+  StrCmp = TagsCaseInsensitive ? TagLEET::stricmp : ::strcmp;
   if (Item->Kind == TAG_KIND_FILE && LineNumFromTag > 0 &&
     TagForLineNum != NULL && StrCmp(TagForLineNum, Item->Tag) == 0)
   {
