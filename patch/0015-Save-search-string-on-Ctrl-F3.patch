@@ -1,0 +1,53 @@
+From d0eccb5ef55a60c91b725ce9d36c8654c8453d34 Mon Sep 17 00:00:00 2001
+From: gstavi <gstavi@users.noreply.github.com>
+Date: Mon, 2 Jan 2017 10:47:35 +0200
+Subject: [PATCH 15/16] Save search string on Ctrl-F3
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------2.5.3"
+
+This is a multi-part message in MIME format.
+--------------2.5.3
+Content-Type: text/plain; charset=UTF-8; format=fixed
+Content-Transfer-Encoding: 8bit
+
+
+diff --git a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp
+index 63f8613..5730a49 100644
+--- a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp
++++ b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp
+@@ -1158,6 +1158,9 @@ bool FindReplaceDlg::processFindNext(const TCHAR *txt2find, const FindOption *op
+ 	if (!txt2find || !txt2find[0])
+ 		return false;
+ 
++	setSearchText(txt2find);
++	updateCombo(IDFINDWHAT);
++
+ 	const FindOption *pOptions = options?options:_env;
+ 
+ 	(*_ppEditView)->execute(SCI_CALLTIPCANCEL);
+@@ -1846,7 +1849,7 @@ void FindReplaceDlg::findAllIn(InWhat op)
+ }
+ 
+ 
+-void FindReplaceDlg::setSearchText(TCHAR * txt2find) {
++void FindReplaceDlg::setSearchText(const TCHAR * txt2find) {
+ 	HWND hCombo = ::GetDlgItem(_hSelf, IDFINDWHAT);
+ 	if (txt2find && txt2find[0])
+ 	{
+diff --git a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h
+index 3a638b7..c2d85f4 100644
+--- a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h
++++ b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h
+@@ -230,7 +230,7 @@ public :
+ 	int processRange(ProcessOperation op, const TCHAR *txt2find, const TCHAR *txt2replace, int startRange, int endRange, const TCHAR *fileName = NULL, const FindOption *opt = NULL, int colourStyleID = -1);
+ 	void replaceAllInOpenedDocs();
+ 	void findAllIn(InWhat op);
+-	void setSearchText(TCHAR * txt2find);
++	void setSearchText(const TCHAR * txt2find);
+ 
+ 	void gotoNextFoundResult(int direction = 0) {if (_pFinder) _pFinder->gotoNextFoundResult(direction);};
+ 
+
+--------------2.5.3--
+
+
