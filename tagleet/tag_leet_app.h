@@ -97,8 +97,11 @@ public:
   HFONT GetListViewFont() const { return ListViewFont; }
   int GetStatusHeight() const { return StatusHeight; }
   void Shutdown();
-  TL_ERR GetTagsFilePath(NppCallContext *NppC, char *TagFileBuff,
-  int BuffSize);
+  TL_ERR GetTagsFilePath(NppCallContext *NppC, char *TagFileBuff, int BuffSize);
+
+  void SetFormSize(unsigned int Width, unsigned int Height);
+  void GetFormSize(unsigned int *Width, unsigned int *Height);
+  void UpdateFormScale(int change);
 
   static void SetInstance(HINSTANCE in_InstanceHndl);
 
@@ -121,6 +124,10 @@ private:
   HWND SciMainHndl;
   HWND SciSecHndl;
   TagLeetForm *Form;
+  unsigned int FormScale;
+  unsigned int FormWidth;
+  unsigned int FormHeight;  
+  bool HeightWidthValid;
   int StatusHeight;
   HFONT StatusFont;
   HFONT ListViewFont;

@@ -25,6 +25,8 @@
 #include "resource.h"
 
 #define DEFAULT_SCREEN_HEIGHT 1024
+#define DEFAULT_FORM_WIDTH 700
+#define DEFAULT_FORM_HEIGHT 350
 
 using namespace TagLEET_NPP;
 
@@ -61,6 +63,8 @@ TagLeetApp::TagLeetApp(const struct NppData *NppDataObj)
 
   StatusFont = CreateStatusFont();
   ListViewFont = CreateListViewFont();
+  FormScale = 100;
+  HeightWidthValid = false;
 }
 
 TagLeetApp::~TagLeetApp()
@@ -94,6 +98,62 @@ void TagLeetApp::Shutdown()
   }
 
   delete this;
+}
+
+void TagLeetApp::GetFormSize(unsigned int *Width,
+  unsigned int *Height)
+{
+  if (HeightWidthValid) {
+    *Width = FormWidth * FormScale / 100;
+    *Height = FormHeight * FormScale / 100;
+    return;
+  }
+
+  NppCallContext NppC(this);
+  HMONITOR MonitorHndl;
+  MONITORINFO MonitorInfo;
+  int CurrWidth;
+  int CurrHeight;
+  DWORD res;
+
+  MonitorHndl = ::MonitorFromWindow (NppC.SciHndl, MONITOR_DEFAULTTONEAREST);
+  ::memset(&MonitorInfo, 0, sizeof(MonitorInfo));
+  MonitorInfo.cbSize = sizeof(MonitorInfo);
+  res = ::GetMonitorInfo(MonitorHndl, &MonitorInfo);
+  if (res != 0)
+  {
+    int W = MonitorInfo.rcWork.right - MonitorInfo.rcWork.left;
+    int H = MonitorInfo.rcWork.bottom - MonitorInfo.rcWork.top;
+    CurrWidth = W * 55 / 100;
+    CurrHeight = H * 35 / 100;
+  }
+  else
+  {
+    CurrWidth = DEFAULT_FORM_WIDTH;
+    CurrHeight = DEFAULT_FORM_HEIGHT;
+  }
+
+  *Width = CurrWidth * FormScale / 100;
+  *Height = CurrHeight * FormScale / 100;
+}
+
+void TagLeetApp::SetFormSize(unsigned int Width,
+  unsigned int Height)
+{
+  FormWidth = Width * 100 / FormScale;
+  FormHeight = Height * 100 / FormScale;
+  HeightWidthValid = true;
+}
+
+void TagLeetApp::UpdateFormScale(int change)
+{
+    unsigned NewScale;
+
+    NewScale = FormScale + change;
+    if (NewScale >= 40 && NewScale <= 170)
+    {
+        FormScale = NewScale;
+    }
 }
 
 int TagLeetApp::GetScreenHeight()
@@ -160,12 +220,12 @@ HFONT TagLeetApp::CreateStatusFont()
     TEXT("Times New Roman")};
 
   StatusHeight = GetScreenHeight() / 50;
-  if (StatusHeight < 22)
+  if (StatusHeight < 25)
   {
-    StatusHeight = 22;
+    StatusHeight = 25;
   }
 
-  return CreateSpecificFont(FontList, ARRAY_SIZE(FontList), StatusHeight);
+  return CreateSpecificFont(FontList, ARRAY_SIZE(FontList), StatusHeight - 3);
 }
 
 HFONT TagLeetApp::CreateListViewFont()

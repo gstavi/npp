@@ -25,9 +25,6 @@
 
 #include "resource.h"
 
-#define DEFAULT_FORM_WIDTH 700
-#define DEFAULT_FORM_HEIGHT 350
-
 using namespace TagLEET_NPP;
 
 #define SORT_UP_IMG_IDX    13
@@ -44,6 +41,11 @@ TagLeetForm::TagLeetForm(NppCallContext *NppC)
   DoPrefixMatch = false;
   ::memset(&BackLoc, 0, sizeof(BackLoc));
   BackLocBank = NppC->LocBank;
+
+  LastMaxTagWidth = 0;
+  LastMaxFilenameWidth = 0;
+  LastMaxExCmdWidth = 0;
+  NeedUpdateColumns = false;
 
   ::memset(KindToIndex, 0, sizeof(KindToIndex));
   KindToIndex[TAG_KIND_UNKNOWN] = (UINT)-1;
@@ -92,12 +94,9 @@ TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
 {
   NppCallContext *NppC = TLCtx->NppC;
   INITCOMMONCONTROLSEX Icc;
-  HMONITOR MonitorHndl;
-  MONITORINFO MonitorInfo;
   POINT Pt;
-  int FormWidth = DEFAULT_FORM_WIDTH;
-  int FormHeight = DEFAULT_FORM_HEIGHT;
-  DWORD res;
+  unsigned int FormWidth;
+  unsigned int FormHeight;
   TL_ERR err;
 
   BackLoc.FileName = ::_tcsdup(NppC->Path);
@@ -108,24 +107,14 @@ TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
   Icc.dwICC  = ICC_LISTVIEW_CLASSES;
   ::InitCommonControlsEx(&Icc);
 
-  MonitorHndl = ::MonitorFromWindow (NppC->SciHndl, MONITOR_DEFAULTTONEAREST);
-  ::memset(&MonitorInfo, 0, sizeof(MonitorInfo));
-  MonitorInfo.cbSize = sizeof(MonitorInfo);
-  res = ::GetMonitorInfo(MonitorHndl, &MonitorInfo);
-  if (res != 0)
-  {
-    int W = MonitorInfo.rcWork.right - MonitorInfo.rcWork.left;
-    int H = MonitorInfo.rcWork.bottom - MonitorInfo.rcWork.top;
-    FormWidth = W * 55 / 100;
-    FormHeight = H * 35 / 100;
-  }
-
+  App->GetFormSize(&FormWidth, &FormHeight);
   NppC->CalcFormPos(&Pt, FormWidth, FormHeight);
+
   FormHWnd = ::CreateWindowEx(
     WS_EX_TOOLWINDOW,
     TagLeetApp::WindowClassName,
     TEXT("TagLEET for Notepad++"),
-    WS_SYSMENU,
+    WS_SIZEBOX | WS_SYSMENU,
     Pt.x, Pt.y, FormWidth, FormHeight,
     NppC->SciHndl,
     NULL,
@@ -149,6 +138,47 @@ TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
   ::ShowWindow(FormHWnd, SW_SHOW);
   ::SetFocus(LViewHWnd);
   return TL_ERR_OK;
+}
+
+void TagLeetForm::OnResize()
+{
+  RECT Rect;
+  int StatusHeight;
+  int FocusIdx;
+
+  ::GetClientRect(FormHWnd, &Rect);
+  StatusHeight = App->GetStatusHeight();
+  ::SetWindowPos(LViewHWnd, NULL, 0,
+    0, Rect.right, Rect.bottom - StatusHeight,
+    SWP_NOZORDER);
+  FocusIdx = ListView_GetNextItem(LViewHWnd, -1, LVNI_FOCUSED);
+  ListView_EnsureVisible(LViewHWnd, FocusIdx, FALSE);
+  ::SetWindowPos(StatusHWnd, NULL,
+    0, Rect.bottom - StatusHeight, Rect.right, StatusHeight,
+    SWP_NOZORDER);
+
+  ::GetWindowRect(FormHWnd, &Rect);
+  App->SetFormSize(Rect.right - Rect.left, Rect.bottom - Rect.top);
+  NeedUpdateColumns = true;
+}
+
+void TagLeetForm::ResizeForm(int change)
+{
+  NppCallContext NppC(App);
+  PAINTSTRUCT Paint;
+  POINT Pt;
+  unsigned int FormWidth;
+  unsigned int FormHeight;
+
+  App->UpdateFormScale(change);
+  App->GetFormSize(&FormWidth, &FormHeight);
+  NppC.CalcFormPos(&Pt, FormWidth, FormHeight);
+
+  ::BeginPaint(FormHWnd, &Paint);
+  ::SetWindowPos(FormHWnd, NULL,
+    Pt.x, Pt.y, FormWidth, FormHeight,
+    SWP_NOZORDER);
+  ::EndPaint(FormHWnd, &Paint);
 }
 
 /* Called from WM_CREATE message of Form window. Note that at this point
@@ -384,6 +414,18 @@ LRESULT TagLeetForm::WndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
     case WM_NCDESTROY:
       return 0;
 
+    case WM_SIZE:
+      OnResize();
+      break;
+
+    case WM_PAINT:
+      if (NeedUpdateColumns)
+      {
+        UpdateColumnWidths(LastMaxTagWidth, LastMaxFilenameWidth,LastMaxExCmdWidth);
+        NeedUpdateColumns = false;
+      }
+      break;
+
     case WM_NOTIFY:
     {
       LPNMHDR pnmh = (LPNMHDR)lParam;
@@ -406,6 +448,12 @@ LRESULT TagLeetForm::WndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
               GoToSelectedTag();
               break;
             }
+            case VK_ADD:
+              ResizeForm(10);
+              break;
+            case VK_SUBTRACT:
+              ResizeForm(-10);
+              break;
             case VK_ESCAPE:
               PostCloseMsg();
               return 0;
@@ -588,6 +636,10 @@ void TagLeetForm::UpdateColumnWidths(int MaxTagWidth, int MaxFilenameWidth,
   int TotalWidth, MaxWidth;
   int TagWidth, FilenameWidth, ExCmdWidth, ItemsHight;
   DWORD ApproxRect;
+
+  LastMaxTagWidth = MaxTagWidth;
+  LastMaxFilenameWidth = MaxFilenameWidth;
+  LastMaxExCmdWidth = MaxExCmdWidth;
 
   MaxTagWidth += 28;
   MaxFilenameWidth += 12;

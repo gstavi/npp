@@ -59,12 +59,18 @@ private:
   static int CALLBACK LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
     LPARAM FormPtr);
   void SetColumnSortArrow(int ColumnIdx, bool Show, bool Down=false);
+  void ResizeForm(int change);
+  void OnResize();
 
   TagLeetApp *App;
   TagList TList;
   UINT KindToIndex[TAG_KIND_LAST];
   bool DoPrefixMatch;
   uint8_t SortOrder[3];
+  int LastMaxTagWidth;
+  int LastMaxFilenameWidth;
+  int LastMaxExCmdWidth;
+  bool NeedUpdateColumns;
 
   /* Location in NPP file during tag open. If we end up 'going' to a tag's
    * location this location will be pushed into the 'Back' queue */
