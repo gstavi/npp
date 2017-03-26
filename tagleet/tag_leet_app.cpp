@@ -61,6 +61,13 @@ TagLeetApp::TagLeetApp(const struct NppData *NppDataObj)
   wndclass.lpszClassName  = WindowClassName;
   ::RegisterClass (&wndclass);
 
+  ListViewFontHeight = GetScreenHeight() / 60;
+  if (ListViewFontHeight < 20)
+  {
+    ListViewFontHeight = 20;
+  }
+  DefaultListViewFontHeight = ListViewFontHeight;
+
   StatusFont = CreateStatusFont();
   ListViewFont = CreateListViewFont();
   FormScale = 100;
@@ -83,7 +90,9 @@ TagLeetApp::~TagLeetApp()
   }
   ::UnregisterClass(WindowClassName, InstanceHndl);
   if (StatusFont != NULL)
-    DeleteObject(StatusFont);
+    ::DeleteObject(StatusFont);
+  if (ListViewFont != NULL)
+    ::DeleteObject(ListViewFont);
   DeleteCriticalSection(&CritSec);
 }
 
@@ -138,8 +147,15 @@ void TagLeetApp::GetFormSize(unsigned int *Width,
 }
 
 void TagLeetApp::SetFormSize(unsigned int Width,
-  unsigned int Height)
+  unsigned int Height, bool reset)
 {
+  if (reset)
+  {
+    HeightWidthValid = false;
+    FormScale = 100;
+    return;
+  }
+
   FormWidth = Width * 100 / FormScale;
   FormHeight = Height * 100 / FormScale;
   HeightWidthValid = true;
@@ -238,15 +254,40 @@ HFONT TagLeetApp::CreateListViewFont()
     TEXT("DejaVu Sans Light"),
     TEXT("Cousine"),
     };
-  int FontHeight;
 
-  FontHeight = GetScreenHeight() / 60;
-  if (FontHeight < 20)
+  return CreateSpecificFont(FontList, ARRAY_SIZE(FontList), ListViewFontHeight);
+}
+
+HFONT TagLeetApp::UpdateListViewFont(int change, bool reset)
+{
+  int NewFontHeight;
+  int OldFontHeight;
+  HFONT OldListViewFont;
+
+  OldFontHeight = ListViewFontHeight;
+  OldListViewFont = ListViewFont;
+
+  NewFontHeight = reset ?
+    DefaultListViewFontHeight : ListViewFontHeight + change;
+  if (NewFontHeight < 14 || NewFontHeight > 40)
   {
-    FontHeight = 20;
+    return ListViewFont;
   }
 
-  return CreateSpecificFont(FontList, ARRAY_SIZE(FontList), FontHeight);
+  ListViewFontHeight = NewFontHeight;
+  ListViewFont = CreateListViewFont();
+  if (ListViewFont != NULL)
+  {
+    ::DeleteObject(OldListViewFont);
+  }
+  else
+  {
+    ListViewFont = OldListViewFont;
+    ListViewFontHeight = OldFontHeight;
+    
+  }
+
+  return ListViewFont;
 }
 
 void TagLeetApp::SetInstance(HINSTANCE in_InstanceHndl)

@@ -99,9 +99,11 @@ public:
   void Shutdown();
   TL_ERR GetTagsFilePath(NppCallContext *NppC, char *TagFileBuff, int BuffSize);
 
-  void SetFormSize(unsigned int Width, unsigned int Height);
+  void SetFormSize(unsigned int Width, unsigned int Height, bool reset);
   void GetFormSize(unsigned int *Width, unsigned int *Height);
   void UpdateFormScale(int change);
+
+  HFONT UpdateListViewFont(int change, bool reset);
 
   static void SetInstance(HINSTANCE in_InstanceHndl);
 
@@ -130,6 +132,8 @@ private:
   bool HeightWidthValid;
   int StatusHeight;
   HFONT StatusFont;
+  unsigned int ListViewFontHeight;
+  unsigned int DefaultListViewFontHeight;
   HFONT ListViewFont;
   bool DestroyOnDetachForm;
   TCHAR LastTagFile[TL_MAX_PATH];

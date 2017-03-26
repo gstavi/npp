@@ -158,7 +158,7 @@ void TagLeetForm::OnResize()
     SWP_NOZORDER);
 
   ::GetWindowRect(FormHWnd, &Rect);
-  App->SetFormSize(Rect.right - Rect.left, Rect.bottom - Rect.top);
+  App->SetFormSize(Rect.right - Rect.left, Rect.bottom - Rect.top, false);
   NeedUpdateColumns = true;
 }
 
@@ -179,6 +179,22 @@ void TagLeetForm::ResizeForm(int change)
     Pt.x, Pt.y, FormWidth, FormHeight,
     SWP_NOZORDER);
   ::EndPaint(FormHWnd, &Paint);
+}
+
+void TagLeetForm::ResizeListViewFont(int change, bool reset)
+{
+    HFONT ListViewFont;
+    int FocusIdx;
+
+    ::SendMessage(LViewHWnd, WM_SETREDRAW, FALSE, 0);
+    App->UpdateListViewFont(change, reset);
+    ListViewFont = App->GetListViewFont();
+    ::SendMessage(LViewHWnd, WM_SETFONT, (WPARAM)ListViewFont, (LPARAM)0);
+    ::SendMessage(LViewHWnd, WM_SETREDRAW, TRUE, 0);
+    FocusIdx = ListView_GetNextItem(LViewHWnd, -1, LVNI_FOCUSED);
+    ListView_EnsureVisible(LViewHWnd, FocusIdx, FALSE);
+    ::RedrawWindow(LViewHWnd, NULL, NULL,
+      RDW_ERASE  | RDW_INVALIDATE | RDW_ALLCHILDREN);
 }
 
 /* Called from WM_CREATE message of Form window. Note that at this point
@@ -449,10 +465,35 @@ LRESULT TagLeetForm::WndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
               break;
             }
             case VK_ADD:
-              ResizeForm(10);
+              if (::GetKeyState(VK_CONTROL) & 0x8000)
+              {
+                ResizeListViewFont(1, false);
+              }
+              else
+              {
+                ResizeForm(10);
+              }
               break;
             case VK_SUBTRACT:
-              ResizeForm(-10);
+              if (::GetKeyState(VK_CONTROL) & 0x8000)
+              {
+                ResizeListViewFont(-1, false);
+              }
+              else
+              {
+                ResizeForm(-10);
+              }
+              break;
+            case VK_DIVIDE:
+              if (::GetKeyState(VK_CONTROL) & 0x8000)
+              {
+                ResizeListViewFont(0, true);
+              }
+              else
+              {
+                App->SetFormSize(0, 0, true);
+                ResizeForm(0);
+              }
               break;
             case VK_ESCAPE:
               PostCloseMsg();

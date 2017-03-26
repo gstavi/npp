@@ -60,6 +60,7 @@ private:
     LPARAM FormPtr);
   void SetColumnSortArrow(int ColumnIdx, bool Show, bool Down=false);
   void ResizeForm(int change);
+  void ResizeListViewFont(int change, bool reset);
   void OnResize();
 
   TagLeetApp *App;
