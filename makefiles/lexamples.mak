@@ -25,8 +25,8 @@ BASE_CFLAGS_ms_opt = /O2 /Os /GL /GR- /GS- /DNDEBUG
 LDFLAGS_VARS = BASE_LDFLAGS LDFLAGS LEXAMPLES_LIBS CPP_RT_LIBS
 BASE_LDFLAGS_ms_opt =
 LEXAMPLES_LIBS_ms = kernel32.lib user32.lib
-LDFLAGS_ms_dbg = /NODEFAULTLIB /DEF:$(SRCDIR)/lexamples.def
-LDFLAGS_ms_opt = /NODEFAULTLIB /LTCG /DEF:$(SRCDIR)/lexamples.def
+LDFLAGS_ms_dbg = /DEF:$(SRCDIR)/lexamples.def
+LDFLAGS_ms_opt = /LTCG /DEF:$(SRCDIR)/lexamples.def
 
 CFLAGS_gcc = -DUNICODE -D_UNICODE -DSCI_LEXER --std=c++0x -fno-rtti -fpermissive
 LDFLAGS_gcc = -s -static $(SRCDIR)/lexamples.def

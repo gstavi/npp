@@ -36,11 +36,11 @@ PRE_COMP_HDR =
 RT_CFLAGS_ms_opt = /MT
 RT_CFLAGS_ms_dbg = /MTd
 RT_CFLAGS_gcc =
-C_RT_LIBS_ms_opt = libcmt.lib
-C_RT_LIBS_ms_dbg = libcmtd.lib
+C_RT_LIBS_ms_opt =
+C_RT_LIBS_ms_dbg =
 C_RT_LIBS_gcc =
-CPP_RT_LIBS_ms_opt = libcmt.lib libcpmt.lib
-CPP_RT_LIBS_ms_dbg = libcmtd.lib libcpmtd.lib
+CPP_RT_LIBS_ms_opt =
+CPP_RT_LIBS_ms_dbg =
 CPP_RT_LIBS_gcc =
 
 INSTALL_DIR =

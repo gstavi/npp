@@ -37,7 +37,7 @@ NPP_CFLAGS_DEFS = WIN32 _WINDOWS _USE_64BIT_TIME_T \
 CFLAGS = /GF /FD /EHa /Gy /WX /WX $(addprefix /D,$(NPP_CFLAGS_DEFS))
 
 LDFLAGS_VARS = BASE_LDFLAGS LDFLAGS NPP_LIBS CPP_RT_LIBS
-LDFLAGS_ms = /NODEFAULTLIB /SUBSYSTEM:WINDOWS
+LDFLAGS_ms = /SUBSYSTEM:WINDOWS
 NPP_LIBS_ms = comctl32.lib shlwapi.lib shell32.lib Oleacc.lib kernel32.lib \
 	user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib \
 	ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib oldnames.lib
