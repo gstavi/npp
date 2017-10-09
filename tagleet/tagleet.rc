@@ -23,7 +23,7 @@ BEGIN
         VALUE "FileDescription",   "TagLEET - ctags plugin for Notepad++\0"
         VALUE "FileVersion",       VERSION_TAGLEET "\0"
         VALUE "InternalName",      "TagLEET\0"
-        VALUE "LegalCopyright",    "Copyright 2014-2016 by Gur Stavi\0"
+        VALUE "LegalCopyright",    "Copyright 2014-2017 by Gur Stavi\0"
         VALUE "OriginalFilename",  "TagLEET.dll\0"
         VALUE "ProductName",       "TagLEET\0"
         VALUE "ProductVersion",    VERSION_TAGLEET "\0"
