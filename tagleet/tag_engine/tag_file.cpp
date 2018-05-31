@@ -536,7 +536,7 @@ TfAllocator::TfAllocator(uint32_t in_AllocPageSize, uint32_t in_AllocAlign)
   AllocAlign = in_AllocAlign;
   assert((AllocAlign & (AllocAlign - 1)) == 0);
   assert(AllocPageSize % AllocAlign == 0);
-  HeaderSize = (sizeof(uint8_t *) + AllocAlign - 1) & ~(AllocAlign - 1);
+  HeaderSize = ((uint32_t)sizeof(uint8_t *) + AllocAlign - 1) & ~(AllocAlign - 1);
   assert(HeaderSize < in_AllocPageSize);
 
   if (AllocPageSize < AllocGranularity)

@@ -131,7 +131,7 @@ TL_ERR TagLeetForm::CreateWnd(TagLookupContext *TLCtx)
     PostCloseMsg();
     return err;
   }
-  
+
   SetColumnSortArrow(SortOrder[0] & 0x7F, true,
     SortOrder[0] & 0x80 ? true : false);
 
@@ -332,13 +332,51 @@ static void FileFromPath(const char **PathPtr, int *PathSizePtr)
   *PathSizePtr = PathSize - last;
 }
 
+static int comp_str(const char *str1, int length1,
+  const char *str2, int length2, bool case_insensitive)
+{
+  int comp_val;
+  int length;
+
+  length = length1 <= length2 ? length1 : length2;
+  comp_val = case_insensitive ?
+    TagLEET::memicmp(str1, str2, length) :
+    ::memcmp(str1, str2, length);
+  if (comp_val == 0 && length1 != length2)
+    comp_val = length1 < length2 ? -1 : 1;
+
+  return comp_val;
+}
+
+/* First compare file names, if identical compare full path. */
+static int comp_file_paths(const char *path1, int path_length1,
+  const char *path2, int path_length2, bool case_insensitive)
+{
+  const char *str1;
+  const char *str2;
+  int comp_val, length1, length2;
+
+  str1 = path1;
+  length1 = path_length1;
+  ::FileFromPath(&str1, &length1);
+
+  str2 = path2;
+  length2 = path_length2;
+  ::FileFromPath(&str2, &length2);
+
+  comp_val = comp_str(str1, length1, str2, length2, case_insensitive);
+  if (comp_val != 0)
+    return comp_val;
+
+  return comp_str(path1, path_length1, path2, path_length2, case_insensitive);
+}
+
 int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
     LPARAM FormPtr)
 {
   TagList::TagListItem *Item1 = (TagList::TagListItem *)Item1Ptr;
   TagList::TagListItem *Item2 = (TagList::TagListItem *)Item2Ptr;
   TagLeetForm *Form = reinterpret_cast<TagLeetForm *>(FormPtr);
-  bool case_insensitive = false;
   int i;
 
   for (i = 0; i < ARRAY_SIZE(Form->SortOrder); i++)
@@ -353,16 +391,15 @@ int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
         length1 = (int)::strlen(str1);
         str2 = Item2->Tag;
         length2 = (int)::strlen(str2);
-        case_insensitive = Form->TList.TagsCaseInsensitive;
+        CompVal = comp_str(str1, length1, str2, length2,
+          Form->TList.TagsCaseInsensitive);
         break;
       case COLUMN_FILENAME:
         str1 = Item1->FileName;
         length1 = (int)::strlen(str1);
-        ::FileFromPath(&str1, &length1);
         str2 = Item2->FileName;
         length2 = (int)::strlen(str2);
-        ::FileFromPath(&str2, &length2);
-        break;
+        CompVal = comp_file_paths(str1, length1, str2, length2, false);
         break;
       case COLUMN_EXCMD:
         str1 = Item1->ExCmd;
@@ -371,16 +408,13 @@ int CALLBACK TagLeetForm::LvSortFunc(LPARAM Item1Ptr, LPARAM Item2Ptr,
         str2 = Item2->ExCmd;
         length2 = (int)::strlen(str2);
         ::CleanExCmd(&str2, &length2);
+        CompVal = comp_str(str1, length1, str2, length2,
+          Form->TList.TagsCaseInsensitive);
         break;
       default:
         continue;
     }
 
-    CompVal = case_insensitive ?
-      TagLEET::memicmp(str1, str2, length1 <= length2 ? length1 : length2) :
-      ::memcmp(str1, str2, length1 <= length2 ? length1 : length2);
-    if (CompVal == 0 && length1 != length2)
-      CompVal = length1 < length2 ? -1 : 1;
     if (CompVal != 0)
       return Form->SortOrder[i] & 0x80 ? -CompVal : CompVal;
   }
