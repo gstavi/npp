@@ -155,7 +155,7 @@ public:
   LRESULT NppMsg(int Msg, WPARAM wParam = 0, LPARAM lParam = 0);
   void UpdateSelection(int Start, int End);
 
-  int (*SciDirectFunc)(void *, int, int, int);
+  void *SciDirectFuncPtr;
   void *SciDirectPtr;
 
   TagLeetApp *App;

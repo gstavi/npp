@@ -138,12 +138,15 @@ NppCallContext::NppCallContext(TagLeetApp *in_App)
   ReInit();
 }
 
+typedef sptr_t (*sci_fn_direct_t)(void *ptr, unsigned int iMessage,
+  uptr_t wParam, sptr_t lParam);
+
 /* Should be called after an operation that may change NPP current scintilla */
 void NppCallContext::ReInit()
 {
   int Pos, LineStartPos;
 
-  SciDirectFunc = NULL;
+  SciDirectFuncPtr = NULL;
   SciDirectPtr = NULL;
   SciEditIndex = 0;
   ::SendMessage(App->NppHndl, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&SciEditIndex);
@@ -160,9 +163,7 @@ void NppCallContext::ReInit()
   SciDirectPtr = (char *)0 + SciMsg(SCI_GETDIRECTPOINTER);
   if (SciDirectPtr != NULL)
   {
-    void *ptr = (char *)0 + SciMsg(SCI_GETDIRECTFUNCTION);
-    if (ptr != NULL)
-      SciDirectFunc = reinterpret_cast<int (*)(void *, int, int, int)>(ptr);
+    SciDirectFuncPtr = (char *)0 + SciMsg(SCI_GETDIRECTFUNCTION);
   }
 
   Pos = (int)SciMsg(SCI_GETSELECTIONSTART);
@@ -176,8 +177,11 @@ void NppCallContext::ReInit()
 
 LRESULT NppCallContext::SciMsg(int Msg, WPARAM wParam, LPARAM lParam)
 {
+  sci_fn_direct_t SciDirectFunc;
+
+  SciDirectFunc = (sci_fn_direct_t)SciDirectFuncPtr;
   return SciDirectFunc != NULL ?
-    SciDirectFunc(SciDirectPtr, Msg, (int)wParam, (int)lParam) :
+    SciDirectFunc(SciDirectPtr, Msg, wParam, lParam) :
     SciHndl != NULL ? ::SendMessage(SciHndl, Msg, wParam, lParam) : 0;
 }
 
@@ -190,7 +194,7 @@ LRESULT NppCallContext::NppMsg(int Msg, WPARAM wParam, LPARAM lParam)
 void NppCallContext::UpdateSelection(int Start, int End)
 {
   SciMsg(SCI_SETSELECTIONSTART, Start);
-  SciMsg( SCI_SETSELECTIONEND, End);
+  SciMsg(SCI_SETSELECTIONEND, End);
 }
 
 void NppCallContext::CalcFormPos(POINT *Pt, int width, int height)
