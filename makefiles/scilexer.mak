@@ -18,20 +18,21 @@ SRC_FILES = Accessor.cxx Catalogue.cxx ExternalLexer.cxx LexerBase.cxx \
 	ContractionState.cxx Decoration.cxx Document.cxx Editor.cxx KeyMap.cxx \
 	Indicator.cxx LineMarker.cxx PerLine.cxx PlatWin.cxx PositionCache.cxx \
 	PropSetSimple.cxx RESearch.cxx RunStyles.cxx Selection.cxx Style.cxx \
-	UniConversion.cxx ViewStyle.cxx BoostRegExSearch.cxx CaseFolder.cxx \
-	CaseConvert.cxx UTF8DocumentIterator.cxx CharacterCategory.cxx \
+	UniConversion.cxx ViewStyle.cxx CaseFolder.cxx \
+	CaseConvert.cxx CharacterCategory.cxx \
+	EditModel.cxx EditView.cxx MarginView.cxx DefaultLexer.cxx LexerNoExceptions.cxx UniqueString.cxx HanjaDic.cxx DBCS.cxx \
+	ScintillaDLL.cxx \
 	XPM.cxx $(wildcard $(SRCDIR)/lexers/Lex*.cxx)
 RES_FILES = ScintRes.rc
 
 
-CFLAGS_VARS += CFLAGS RT_CFLAGS
-CFLAGS = /EHsc /DSCI_OWNREGEX /DSCI_LEXER \
-	/DBOOST_AUTO_LINK_NOMANGLE /DBOOST_REGEX_NO_LIB \
-	/DBOOST_LIB_NAME=libboost_regex
+CFLAGS_VARS += CPP_STD CFLAGS RT_CFLAGS
+CFLAGS = /EHsc /DSCI_LEXER
+CPP_STD_ms = /std:c++latest
 
 LDFLAGS_VARS = BASE_LDFLAGS LDFLAGS SCI_LIBS CPP_RT_LIBS
 LDFLAGS_ms = /LIBPATH:$(PLATDORM_DIR)
-SCI_LIBS = kernel32.lib user32.lib gdi32.lib ole32.lib imm32.lib uuid.lib \
+SCI_LIBS = kernel32.lib user32.lib gdi32.lib ole32.lib imm32.lib uuid.lib Shcore.lib OleAut32.lib Msimg32.lib \
 	libboost_regex.lib
 
 PRE_COMPILE_DEP = scintilla_regen
@@ -46,7 +47,7 @@ scintilla_regen: $(SRCDIR)/include/SciLexer.h $(SRCDIR)/src/Catalogue.cxx \
 
 $(SRCDIR)/src/Catalogue.cxx: $(SRCDIR)/include/Scintilla.iface \
 	$(wildcard $(SRCDIR)/lexers/Lex*.cxx)
-	@cd $(SRCDIR)/scripts && python LexGen.py
+	@cd $(SRCDIR)/scripts && python3 LexGen.py
 
 $(SRCDIR)/include/Scintilla.h $(SRCDIR)/include/SciLexer.h: \
 	$(SRCDIR)/include/Scintilla.iface

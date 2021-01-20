@@ -25,27 +25,28 @@ RES_FILES := \
 	$(SRCDIR)/src/MISC/RegExt/regExtDlg.rc \
 	$(SRCDIR)/src/Notepad_plus.rc \
 
-DBG_INFO_CFLAGS = /Zi /Fd$(OUTDIR)/
 PCH_CFLAGS_cpp = $$(PCH_USE_CFLAGS)
 PCH_CFLAGS_c =
 
-CFLAGS_VARS += CFLAGS RT_CFLAGS
+CFLAGS_VARS += CFLAGS RT_CFLAGS CPP_STD
 NPP_CFLAGS_DEFS = WIN32 _WINDOWS _USE_64BIT_TIME_T \
 	TIXML_USE_STL TIXMLA_USE_STL _CRT_NONSTDC_NO_DEPRECATE \
 	_CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS=1 \
 	_UNICODE UNICODE
 CFLAGS = /GF /FD /EHa /Gy /WX /WX $(addprefix /D,$(NPP_CFLAGS_DEFS))
+CPP_STD_ms = /std:c++latest
 
 LDFLAGS_VARS = BASE_LDFLAGS LDFLAGS NPP_LIBS CPP_RT_LIBS
 LDFLAGS_ms = /SUBSYSTEM:WINDOWS
 NPP_LIBS_ms = comctl32.lib shlwapi.lib shell32.lib Oleacc.lib kernel32.lib \
 	user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib \
-	ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib oldnames.lib
+	ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib oldnames.lib \
+	Version.lib Sensapi.lib Dbghelp.lib Crypt32.lib Wintrust.lib
 
 RESFLAGS_VARS = RESFLAGS
 RESFLAGS_ms = /dUNICODE
 
-XML_FILES = stylers.model.xml config.model.xml langs.model.xml shortcuts.xml \
+XML_FILES = stylers.model.xml langs.model.xml shortcuts.xml \
 	contextMenu.xml functionList.xml userDefineLang.xml
 PRE_INSTALL_DEP = $(INSTALL_PATH)/npp_lic.txt \
 	$(addprefix $(INSTALL_PATH)/,$(XML_FILES))

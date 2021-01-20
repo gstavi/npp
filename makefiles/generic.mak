@@ -29,7 +29,7 @@ ifeq ($(DO_COMPILE),1)
 $(if $(SRC_FILES),,$(info SRC_FILES undefined using local c/cpp files))
 SRC_FILES ?= $(wildcard *.c *.cpp)
 AUTO_INCLUDE_DIRS := $(if $(INCLUDE_DIRS_BASE), $(strip $(sort \
-	$(shell /usr/bin/find $(INCLUDE_DIRS_BASE) -name '*.h' -printf "%h\n"))))
+	$(shell /usr/bin/find $(INCLUDE_DIRS_BASE) \( -name '*.h' -o -name '*.hpp' \) -printf "%h\n"))))
 INCLUDE_DIRS += $(AUTO_INCLUDE_DIRS) $(MORE_INCLUDE_DIRS)
 endif
 
@@ -57,6 +57,12 @@ unknown_var = $(error Can't find $(1) for $(2))
 get_var_helper = $(if $(filter 1,$(DBGVARS)),$(info $(1)[$(2)]=$(3)))$($(3))
 get_var = $(call get_var_helper,$(1),$(2),$(word 1,$(call valid_candidates,$(1),$(2))))
 get_multi_var = $(foreach v,$(call get_var,$(1),$(2)),$(call get_var,$(v),$(2)))
+
+# Convert source file in $(1) to obj/dep/res file
+src2pch = $(OBJDIR)/$(basename $(notdir $(1))).$(PCHEXT)
+src2obj = $(OBJDIR)/$(basename $(notdir $(1))).$(OBJEXT)
+src2dep = $(DEPDIR)/$(notdir $(1)).d
+src2res = $(RESDIR)/$(basename $(notdir $(1))).$(RESEXT)
 
 ifeq ($(TOOLCHAIN),gcc)
 OBJEXT=o
@@ -112,24 +118,27 @@ ALL_CFLAGS = $$(call get_multi_var,CFLAGS_VARS,$(1)) $(addprefix /I,$(INCLUDE_DI
 ALL_RESFLAGS = $$(call get_multi_var,RESFLAGS_VARS,$(1)) $(addprefix /i,$(INCLUDE_DIRS))
 COMPILER = $$(call get_var,MS_COMPILER,$(1))
 PRE_COMPILE_HDR_MACRO = $(VV)$(COMPILER) /nologo /c $(ALL_CFLAGS) $(1)
-COMPILE_MACRO = $(VV)$(COMPILER) /nologo /c $(ALL_CFLAGS) $(1) /Fo$(2)
+define COMPILE_MACRO
+	$(call DEP_MACRO,$(1),$$(call src2dep,$(1)), $$(call src2obj,$(1)))
+	$(VV)$(COMPILER) /nologo /c $(ALL_CFLAGS) $(1) /Fo$(2)
+endef
 COMPILE_RES_MACRO = $(VV)rc.exe $(ALL_RESFLAGS) /fo $(2) $(1)
 LINK_MACRO_EXE = $(VV)$(MS_LINKER) /nologo $(OBJ_FILES) /Fe$(1) \
 	/link $(call get_multi_var,LDFLAGS_VARS,$(1))
 LINK_MACRO_DLL = $(VV)$(MS_LINKER) /nologo /LD $(OBJ_FILES) /Fe$(1) \
 	/link $(call get_multi_var,LDFLAGS_VARS,$(1))
 LINK_MACRO_LIB = $(VV)$(MS_STATIC_LINKER) $(OBJ_FILES) /OUT:$(1)
+#DEP_MACRO $(1)=<src.c> $(2)=<dst.d> $(3)=obj file
 define DEP_MACRO
 	$(VV)$(COMPILER) /nologo /E $(ALL_CFLAGS) $(1) | \
 	sed -n "s|^#line [0-9]* ||p" | \
+	grep -v -e "Windows Kits" -e "Visual Studio" | \
 	/usr/bin/sort -u | \
 	xargs cygpath -u | \
-	sed -e 's| |\\ |g' -e "s|.*|$(2): &|">$(2)
+	sed -e 's| |\\ |g' -e "s|.*|$(3): &|">$(2)
 endef
 endif
 
-DEP_FILES = $(addprefix $(DEPDIR)/,$(addsuffix .d,$(basename \
-	$(notdir $(SRC_FILES)))))
 PCH_FILE = $(strip\
 	$(addprefix $(OBJDIR)/,\
 	$(addsuffix .$(PCHEXT),$(basename $(notdir $(PRE_COMP_HDR))))))
@@ -158,11 +167,7 @@ $(OUTDIR)/$(TARGET): $(OBJ_FILES) $(TARGET_LINK_DEP) $(FORCE_LINK) | SILENT
 
 dummy_link_dep $(TARGET_LINK_DEP):
 
-# Convert source file in $(1) to obj/dep/res file
-src2pch = $(OBJDIR)/$(basename $(notdir $(1))).$(PCHEXT)
-src2obj = $(OBJDIR)/$(basename $(notdir $(1))).$(OBJEXT)
-src2dep = $(DEPDIR)/$(notdir $(1)).d
-src2res = $(RESDIR)/$(basename $(notdir $(1))).$(RESEXT)
+DEP_FILES = $(foreach file,$(SRC_FILES), $(call src2dep,$(file)))
 
 # Generate rule for pre compiled header (.pch) file
 gen_pch_file = $(src2pch): $(1) $(src2dep) | $(OBJDIR); \
@@ -170,8 +175,10 @@ gen_pch_file = $(src2pch): $(1) $(src2dep) | $(OBJDIR); \
 $(foreach file,$(PRE_COMP_HDR),$(eval $(call gen_pch_file,$(file))))
 
 # Generate rules for object (.obj) files
-gen_compile_file = $(src2obj): $(1) $(src2dep) | $(OBJDIR); \
+define gen_compile_file
+$(src2obj): $(1) $(src2dep) | $(OBJDIR) $(DEPDIR)
 	$(call COMPILE_MACRO,$$<,$$@)
+endef
 $(foreach file,$(SRC_FILES),$(eval $(call gen_compile_file,$(file))))
 
 # Generate rules for compiling resource files
@@ -180,11 +187,8 @@ gen_compile_res_file = $(src2res) : $(1) | $(RESDIR); \
 $(foreach file,$(RES_FILES),$(eval $(call gen_compile_res_file,$(file))))
 
 # Generate rules for dependency (.d) files
-PCH_DEP=$(if $(filter $(PRE_COMP_HDR),$(1)),,$(PCH_FILE))
 define gen_dep_file
-$(src2dep): $(1) $(PCH_DEP) | $(DEPDIR)
-	@rm -f $$@
-	$(call DEP_MACRO,$$<,$$@)
+$(src2dep):
 endef
 $(foreach file,$(SRC_FILES) $(PRE_COMP_HDR),$(eval $(call gen_dep_file,$(file))))
 
@@ -202,7 +206,7 @@ deps: ; $(MAKER) $(OUTDIR)/make.dep DO_COMPILE=1
 
 # Include project dependency file only when actually compiling
 ifeq ($(DO_COMPILE),1)
--include $(OUTDIR)/make.dep
+include $(DEP_FILES)
 endif
 
 # To enable progress in case headers that were in dependencies were removed and
