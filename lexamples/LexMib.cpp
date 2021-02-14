@@ -19,6 +19,7 @@
 
  /* Includes required for LexCommon.h */
 #include <assert.h>
+#include "lexamples.h"
 #include "ILexer.h"
 #include "Scintilla.h"
 #include "LexAccessor.h"
@@ -119,7 +120,7 @@ public:
   bool fold;
   bool highlightTableObj;
 
-  static ILexer *LexerFactoryMib();
+  static Scintilla::ILexer4 *LexerFactoryMib();
   static const char *wordListDesc[];
 
   static const char keywordsStrings[];
@@ -334,9 +335,9 @@ MibEntity::MibEntity(int type, int pos):
   wordCount = 0;
 }
 
-LexerEntity *MibEntity::Create(int type, int pos) const
+LexerEntity *MibEntity::Create(int ent_type, int ent_pos) const
 {
-  return new MibEntity(type, pos);
+  return new MibEntity(ent_type, ent_pos);
 }
 
 int MibEntity::GetStyle(LexerCommon::DoLexContext *ctx) const
@@ -1273,12 +1274,12 @@ MIB_TYPES
 #undef TypE
 };
 
-ILexer *LexerMib::LexerFactoryMib()
+Scintilla::ILexer4 *LexerMib::LexerFactoryMib()
 {
   return new LexerMib;
 }
 
-ILexer *lexamples_create_mib_lexer()
+Scintilla::ILexer4 *lexamples_create_mib_lexer()
 {
   return LexerMib::LexerFactoryMib();
 }

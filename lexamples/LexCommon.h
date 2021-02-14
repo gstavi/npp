@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <string>
 #include "ILexer.h"
+#include "DefaultLexer.h"
 #include "Scintilla.h"
 #include "LexAccessor.h"
 #include "WordList.h"
@@ -33,7 +34,7 @@ namespace Scintilla {
 
 class LexerEntity;
 
-class LexerCommon : public ILexer
+class LexerCommon : public DefaultLexer
 {
 public:
   LexerCommon();

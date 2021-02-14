@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with lexamples.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "lexamples.h"
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -67,15 +69,12 @@ extern "C" BOOL isUnicode() {
   return TRUE;
 }
 
-class ILexer;
-
-ILexer *lexamples_create_make_lexer();
-ILexer *lexamples_create_mib_lexer();
+typedef Scintilla::ILexer4 *(LexerFactoryFunc)();
 
 struct {
   const char *LexerName;
   const TCHAR *desc;
-  ILexer *(*factory_func)();
+  LexerFactoryFunc *factory_func;
 } lexamples_lexer_arr[] = {
   { "Make", TEXT("Makefile (lexamples plugin)"), lexamples_create_make_lexer},
   { "Mib",  TEXT("MIB/ASN.1 (lexamples plugin)"),  lexamples_create_mib_lexer}
@@ -98,8 +97,7 @@ extern "C" void __stdcall GetLexerStatusText(unsigned int Index, TCHAR *desc, in
     ::_tcsncpy(desc, lexamples_lexer_arr[Index].desc, buflength);
 }
 
-typedef ILexer *(*LexerFactoryFunc)();
-extern "C" LexerFactoryFunc __stdcall GetLexerFactory(unsigned int Index)
+extern "C" LexerFactoryFunc * __stdcall GetLexerFactory(unsigned int Index)
 {
   return Index < ARRAY_SIZE(lexamples_lexer_arr) ?
     lexamples_lexer_arr[Index].factory_func : NULL;

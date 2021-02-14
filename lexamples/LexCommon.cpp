@@ -59,7 +59,7 @@ LexerCommon::~LexerCommon()
 
 int LexerCommon::Version() const
 {
-  return lvOriginal;
+  return lvRelease4;
 }
 
 void LexerCommon::Release()

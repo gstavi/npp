@@ -39,6 +39,7 @@
 
  /* Includes required for LexCommon.h */
 #include <assert.h>
+#include "lexamples.h"
 #include <string>
 #include "ILexer.h"
 #include "Scintilla.h"
@@ -201,7 +202,7 @@ public:
   bool hlBadEolCont;
   bool hlIdentWithDblDollar;
 
-  static ILexer *LexerFactoryMake();
+  static Scintilla::ILexer4 *LexerFactoryMake();
   static const char *wordListDesc[];
 };
 
@@ -443,9 +444,9 @@ MakeEntity::MakeEntity(int type, int pos):
   hasOpenChild = false;
 }
 
-LexerEntity *MakeEntity::Create(int type, int pos) const
+LexerEntity *MakeEntity::Create(int ent_type, int ent_pos) const
 {
-  return new MakeEntity(type, pos);
+  return new MakeEntity(ent_type, ent_pos);
 }
 
 void MakeEntity::PostCreate()
@@ -556,7 +557,7 @@ int MakeEntity::GetStyle(LexerCommon::DoLexContext *ctx) const
   return SCE_MAKE_DEFAULT;
 }
 
-void MakeEntity::MarkOpenChild(bool hasOpenChild)
+void MakeEntity::MarkOpenChild(bool has_open_child)
 {
   MakeEntity *tmpEnt = this;
 
@@ -567,7 +568,7 @@ void MakeEntity::MarkOpenChild(bool hasOpenChild)
     {
       case MK_FUNC:
       case MK_BRACE_FUNC:
-        tmpEnt->hasOpenChild = hasOpenChild;
+        tmpEnt->hasOpenChild = has_open_child;
         return;
     }
   }
@@ -916,11 +917,11 @@ void MkTokener::ProcessingLoop()
 
 MakeEntity *MkTokener::FlushStyles()
 {
-  MakeEntity *ent;
+  MakeEntity *LocalEnt;
 
   top.SetStyles(ctx);
-  ent = top.CreateChild(MK_EMPTY_LINE);
-  return ent;
+  LocalEnt = top.CreateChild(MK_EMPTY_LINE);
+  return LocalEnt;
 }
 
 void MkTokener::SetFoldLevel()
@@ -1244,12 +1245,12 @@ NULL, /* for MK_TOP */
 MAKE_TYPES(TypE_func)
 };
 
-ILexer *LexerMake::LexerFactoryMake()
+Scintilla::ILexer4 *LexerMake::LexerFactoryMake()
 {
   return new LexerMake;
 }
 
-ILexer *lexamples_create_make_lexer()
+Scintilla::ILexer4 *lexamples_create_make_lexer()
 {
   return LexerMake::LexerFactoryMake();
 }

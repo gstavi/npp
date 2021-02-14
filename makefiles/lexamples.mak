@@ -14,11 +14,12 @@ INCLUDE_DIRS = \
 
 VPATH = $(SRCDIR)
 SRC_FILES = lexamples_npp.cpp LexMake.cpp LexMib.cpp LexCommon.cpp \
-	$(TOPDIR)/trunk/scintilla/lexlib/WordList.cxx
+	$(TOPDIR)/trunk/scintilla/lexlib/WordList.cxx  \
+	$(TOPDIR)/trunk/scintilla/lexlib/DefaultLexer.cxx
 RES_FILES = $(SRCDIR)/lexamples.rc
 
 CFLAGS_VARS += CFLAGS RT_CFLAGS
-CFLAGS_ms = /EHsc /W4 /D_CRT_SECURE_NO_WARNINGS /DUNICODE /D_UNICODE
+CFLAGS_ms = /EHsc /W4 /D_CRT_SECURE_NO_WARNINGS /DUNICODE /D_UNICODE /DSCI_NAMESPACE
 # For Optimized build we want to avoid debugging information completely
 BASE_CFLAGS_ms_opt = /O2 /Os /GL /GR- /GS- /DNDEBUG
 
