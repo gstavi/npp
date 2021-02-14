@@ -1,7 +1,7 @@
-From 5795db5b06cbac351c3a62f1171659cb895e68d1 Mon Sep 17 00:00:00 2001
+From 7736198e3b8fb8a6b0ca1d11d5d6008706a460fe Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:24:41 +0300
-Subject: [PATCH 06/18] Use new icon
+Subject: [PATCH 05/17] Use new icon
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Notepad_plus.rc b/PowerEditor/src/Notepad_plus.rc
-index c19d17ed..df7b4436 100644
+index a107f993..05845e44 100644
 --- a/PowerEditor/src/Notepad_plus.rc
 +++ b/PowerEditor/src/Notepad_plus.rc
 @@ -61,7 +61,7 @@ END
@@ -22,8 +22,8 @@ index c19d17ed..df7b4436 100644
 -IDI_M30ICON                     ICON      "icons/npp.ico"
 +IDI_M30ICON                     ICON      "icons/nppNewIcon.ico"
  IDI_CHAMELEON                   ICON      "icons/chameleon.ico"
- //IDI_JESUISCHARLIE               ICON      "icons/Je_suis_Charlie.ico"
- //IDI_GILETJAUNE               ICON      "icons/giletJaune.ico"
+ //IDI_JESUISCHARLIE             ICON      "icons/Je_suis_Charlie.ico"
+ //IDI_GILETJAUNE                ICON      "icons/giletJaune.ico"
 
 --------------2.30.0--
 

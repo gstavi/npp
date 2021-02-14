@@ -1,7 +1,7 @@
-From 0180c0967c93e224900e86bb9f918c191207fc5b Mon Sep 17 00:00:00 2001
+From c75c9b5eacd45885332d23db46ad190bcd28aba8 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:20:26 +0300
-Subject: [PATCH 04/18] Indent change maintains indent type
+Subject: [PATCH 04/17] Indent change maintains indent type
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -16,7 +16,7 @@ Content-Transfer-Encoding: 8bit
   the global type.
 
 diff --git a/scintilla/src/Document.cxx b/scintilla/src/Document.cxx
-index 48f3b568..3556689c 100644
+index 48f3b568..394042ed 100644
 --- a/scintilla/src/Document.cxx
 +++ b/scintilla/src/Document.cxx
 @@ -1487,12 +1487,53 @@ int SCI_METHOD Document::GetLineIndentation(Sci_Position line) {
@@ -75,7 +75,7 @@ index 48f3b568..3556689c 100644
  		const Sci::Position indentPos = GetLineIndentPosition(line);
  		UndoGroup ug(this);
 diff --git a/scintilla/src/Document.h b/scintilla/src/Document.h
-index 529045d7..adda6905 100644
+index 529045d7..af0b968c 100644
 --- a/scintilla/src/Document.h
 +++ b/scintilla/src/Document.h
 @@ -369,6 +369,7 @@ public:

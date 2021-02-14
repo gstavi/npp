@@ -1,7 +1,7 @@
-From 4c1b6c2514e83496076462ed0664e57aca558aec Mon Sep 17 00:00:00 2001
+From 34a5334a39fbb772766a46e9de709aa7939d70b1 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:27:50 +0300
-Subject: [PATCH 07/18] speedup test for modified files
+Subject: [PATCH 06/17] speedup test for modified files
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -12,10 +12,10 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Parameters.cpp b/PowerEditor/src/Parameters.cpp
-index d7bed691..7c85e753 100644
+index 5c266f2e..f4f6344f 100644
 --- a/PowerEditor/src/Parameters.cpp
 +++ b/PowerEditor/src/Parameters.cpp
-@@ -6744,7 +6744,25 @@ void NppParameters::addScintillaModifiedIndex(int index)
+@@ -6904,7 +6904,25 @@ void NppParameters::addScintillaModifiedIndex(int index)
  
  void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirection)
  {
@@ -42,7 +42,7 @@ index d7bed691..7c85e753 100644
  	if (kernel)
  	{
  		BOOL isWow64 = FALSE;
-@@ -6757,8 +6775,7 @@ void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirect
+@@ -6917,8 +6935,7 @@ void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirect
  
  			if (isWow64)
  			{
@@ -53,7 +53,7 @@ index d7bed691..7c85e753 100644
  				{
  					Wow64EnableWow64FsRedirectionFunc(Wow64FsEnableRedirection);
 diff --git a/PowerEditor/src/ScitillaComponent/Buffer.cpp b/PowerEditor/src/ScitillaComponent/Buffer.cpp
-index 980c0159..2d325867 100644
+index f257a700..249b67f0 100644
 --- a/PowerEditor/src/ScitillaComponent/Buffer.cpp
 +++ b/PowerEditor/src/ScitillaComponent/Buffer.cpp
 @@ -221,13 +221,24 @@ void Buffer::setFileName(const TCHAR *fn, LangType defaultLang)

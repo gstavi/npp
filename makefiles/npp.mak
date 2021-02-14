@@ -41,7 +41,7 @@ LDFLAGS_ms = /SUBSYSTEM:WINDOWS
 NPP_LIBS_ms = comctl32.lib shlwapi.lib shell32.lib Oleacc.lib kernel32.lib \
 	user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib \
 	ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib oldnames.lib \
-	Version.lib Sensapi.lib Dbghelp.lib Crypt32.lib Wintrust.lib
+	Version.lib Sensapi.lib Dbghelp.lib Crypt32.lib Wintrust.lib Winmm.lib
 
 RESFLAGS_VARS = RESFLAGS
 RESFLAGS_ms = /dUNICODE

@@ -1,7 +1,7 @@
-From f7600b349724e92d82e2f4b118d28f127440d264 Mon Sep 17 00:00:00 2001
+From c1aa8dbe8cc7905ffc976865de346a6bdd4863b6 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:39:22 +0300
-Subject: [PATCH 08/18] Use file descriptor API instead FILE api
+Subject: [PATCH 07/17] Use file descriptor API instead FILE api
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -15,10 +15,10 @@ Content-Transfer-Encoding: 8bit
   over SAMBA they will not be treated as new and retain their current access mode
 
 diff --git a/PowerEditor/src/ScitillaComponent/Buffer.cpp b/PowerEditor/src/ScitillaComponent/Buffer.cpp
-index 2d325867..28374b6e 100644
+index 249b67f0..acbfda18 100644
 --- a/PowerEditor/src/ScitillaComponent/Buffer.cpp
 +++ b/PowerEditor/src/ScitillaComponent/Buffer.cpp
-@@ -880,8 +880,8 @@ bool FileManager::backupCurrentBuffer()
+@@ -893,8 +893,8 @@ bool FileManager::backupCurrentBuffer()
  				::SetFileAttributes(fullpath, dwFileAttribs);
  			}
  
@@ -29,7 +29,7 @@ index 2d325867..28374b6e 100644
  			{
  				int lengthDoc = _pNotepadPlus->_pEditView->getCurrentDocLen();
  				char* buf = (char*)_pNotepadPlus->_pEditView->execute(SCI_GETCHARACTERPOINTER);	//to get characters directly from Scintilla buffer
-@@ -1005,8 +1005,8 @@ bool FileManager::saveBuffer(BufferID id, const TCHAR * filename, bool isCopy, g
+@@ -1018,8 +1018,8 @@ bool FileManager::saveBuffer(BufferID id, const TCHAR * filename, bool isCopy, g
  
  	int encoding = buffer->getEncoding();
  

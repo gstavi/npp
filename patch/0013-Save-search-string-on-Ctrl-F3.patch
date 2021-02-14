@@ -1,7 +1,7 @@
-From 82f89c1855be2d483279d42a43bf8cd90aa27f36 Mon Sep 17 00:00:00 2001
+From f57b0bd5e356348e2871d0b57034ecf213ff2c0c Mon Sep 17 00:00:00 2001
 From: gstavi <gstavi@users.noreply.github.com>
 Date: Mon, 2 Jan 2017 10:47:35 +0200
-Subject: [PATCH 14/18] Save search string on Ctrl-F3
+Subject: [PATCH 13/17] Save search string on Ctrl-F3
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -12,10 +12,10 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp
-index 501fd027..8049f810 100644
+index 345ba20a..ec75418b 100644
 --- a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp
 +++ b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.cpp
-@@ -1544,6 +1544,9 @@ bool FindReplaceDlg::processFindNext(const TCHAR *txt2find, const FindOption *op
+@@ -1650,6 +1650,9 @@ bool FindReplaceDlg::processFindNext(const TCHAR *txt2find, const FindOption *op
  	if (!txt2find || !txt2find[0])
  		return false;
  
@@ -25,20 +25,20 @@ index 501fd027..8049f810 100644
  	const FindOption *pOptions = options?options:_env;
  
  	(*_ppEditView)->execute(SCI_CALLTIPCANCEL);
-@@ -2401,7 +2404,7 @@ bool FindReplaceDlg::removeFinder(Finder *finder2remove)
+@@ -2553,7 +2556,7 @@ bool FindReplaceDlg::removeFinder(Finder *finder2remove)
  	return false;
  }
  
--void FindReplaceDlg::setSearchText(TCHAR * txt2find) {
-+void FindReplaceDlg::setSearchText(const TCHAR * txt2find) {
+-void FindReplaceDlg::setSearchText(TCHAR * txt2find)
++void FindReplaceDlg::setSearchText(const TCHAR * txt2find)
+ {
  	HWND hCombo = ::GetDlgItem(_hSelf, IDFINDWHAT);
  	if (txt2find && txt2find[0])
- 	{
 diff --git a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h
-index 1c7732ae..11ad67e6 100644
+index 2d6ea6aa..caf6a33c 100644
 --- a/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h
 +++ b/PowerEditor/src/ScitillaComponent/FindReplaceDlg.h
-@@ -259,7 +259,7 @@ public :
+@@ -263,7 +263,7 @@ public :
  
  	void replaceAllInOpenedDocs();
  	void findAllIn(InWhat op);

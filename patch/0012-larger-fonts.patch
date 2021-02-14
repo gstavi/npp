@@ -1,7 +1,7 @@
-From d1396e08006143f251cc33bcaab1ff5f345937f8 Mon Sep 17 00:00:00 2001
+From 22bc067bc1cd22c01aae323c7fb1654313451f0d Mon Sep 17 00:00:00 2001
 From: gstavi <gstavi@users.noreply.github.com>
 Date: Thu, 7 Jul 2016 10:30:45 +0300
-Subject: [PATCH 13/18] larger fonts
+Subject: [PATCH 12/17] larger fonts
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc b/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc
-index 5a19871c..79da5217 100644
+index a5c83308..5d2cb24a 100644
 --- a/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc
 +++ b/PowerEditor/src/WinControls/FunctionList/functionListPanel.rc
 @@ -33,7 +33,7 @@ IDD_FUNCLIST_PANEL DIALOGEX 26, 41, 142, 324
@@ -25,7 +25,7 @@ index 5a19871c..79da5217 100644
      //PUSHBUTTON      "Reload",IDC_RELOADBUTTON_FUNCLIST, 3,3,38,14
  	//LISTBOX         IDC_LIST_FUNCLIST,50,44,78,120,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 diff --git a/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc b/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc
-index eb392f12..6105a048 100644
+index de9488de..f3785e37 100644
 --- a/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc
 +++ b/PowerEditor/src/WinControls/ProjectPanel/ProjectPanel.rc
 @@ -33,7 +33,7 @@ IDD_PROJECTPANEL DIALOGEX 26, 41, 142, 324

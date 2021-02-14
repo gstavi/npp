@@ -1,7 +1,7 @@
-From 37035a6e154973361dc8a14d5328be9a9e5a93b7 Mon Sep 17 00:00:00 2001
+From 7dc8d3a9c0cd93b0e2256f569fe1547d0841cd21 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 17:12:04 +0300
-Subject: [PATCH 01/18] Update Scintilla.iface to include npp definitions
+Subject: [PATCH 01/17] Update Scintilla.iface to include npp definitions
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -12,10 +12,18 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/scintilla/include/Scintilla.iface b/scintilla/include/Scintilla.iface
-index c154687e..96dc5814 100644
+index c154687e..480d31ee 100644
 --- a/scintilla/include/Scintilla.iface
 +++ b/scintilla/include/Scintilla.iface
-@@ -2807,7 +2807,7 @@ fun void Colourise=4003(position start, position end)
+@@ -712,6 +712,7 @@ val INDIC_POINT=18
+ val INDIC_POINTCHARACTER=19
+ val INDIC_GRADIENT=20
+ val INDIC_GRADIENTCENTRE=21
++val INDIC_EXPLORERLINK=22
+ 
+ # INDIC_CONTAINER, INDIC_IME, INDIC_IME_MAX, and INDIC_MAX are indicator numbers,
+ # not IndicatorStyles so should not really be in the INDIC_ enumeration.
+@@ -2807,7 +2808,7 @@ fun void Colourise=4003(position start, position end)
  set void SetProperty=4004(string key, string value)
  
  # Maximum value of keywordSet parameter of SetKeyWords.
@@ -24,7 +32,7 @@ index c154687e..96dc5814 100644
  
  # Set up the key words used by the lexer.
  set void SetKeyWords=4005(int keyWordSet, string keyWords)
-@@ -2936,6 +2936,7 @@ val SC_MOD_LEXERSTATE=0x80000
+@@ -2936,6 +2937,7 @@ val SC_MOD_LEXERSTATE=0x80000
  val SC_MOD_INSERTCHECK=0x100000
  val SC_MOD_CHANGETABSTOPS=0x200000
  val SC_MODEVENTMASKALL=0x3FFFFF
@@ -32,7 +40,7 @@ index c154687e..96dc5814 100644
  
  ali SC_MOD_INSERTTEXT=INSERT_TEXT
  ali SC_MOD_DELETETEXT=DELETE_TEXT
-@@ -3157,10 +3158,24 @@ val SCLEX_NIM=126
+@@ -3157,10 +3159,24 @@ val SCLEX_NIM=126
  val SCLEX_CIL=127
  val SCLEX_X12=128
  val SCLEX_DATAFLEX=129
@@ -58,7 +66,7 @@ index c154687e..96dc5814 100644
  # Lexical states for SCLEX_PYTHON
  lex Python=SCLEX_PYTHON SCE_P_
  lex Nimrod=SCLEX_NIMROD SCE_P_
-@@ -3247,6 +3262,114 @@ val SCE_D_STRINGR=19
+@@ -3247,6 +3263,114 @@ val SCE_D_STRINGR=19
  val SCE_D_WORD5=20
  val SCE_D_WORD6=21
  val SCE_D_WORD7=22
@@ -173,7 +181,7 @@ index c154687e..96dc5814 100644
  # Lexical states for SCLEX_TCL
  lex TCL=SCLEX_TCL SCE_TCL_
  val SCE_TCL_DEFAULT=0
-@@ -3630,7 +3753,21 @@ val SCE_MAKE_PREPROCESSOR=2
+@@ -3630,7 +3754,21 @@ val SCE_MAKE_PREPROCESSOR=2
  val SCE_MAKE_IDENTIFIER=3
  val SCE_MAKE_OPERATOR=4
  val SCE_MAKE_TARGET=5
@@ -195,7 +203,7 @@ index c154687e..96dc5814 100644
  # Lexical states for SCLEX_DIFF
  lex Diff=SCLEX_DIFF SCE_DIFF_
  val SCE_DIFF_DEFAULT=0
-@@ -4208,6 +4345,12 @@ val SCE_ASN1_ATTRIBUTE=7
+@@ -4208,6 +4346,12 @@ val SCE_ASN1_ATTRIBUTE=7
  val SCE_ASN1_DESCRIPTOR=8
  val SCE_ASN1_TYPE=9
  val SCE_ASN1_OPERATOR=10
@@ -208,7 +216,7 @@ index c154687e..96dc5814 100644
  # Lexical states for SCLEX_VHDL
  lex VHDL=SCLEX_VHDL SCE_VHDL_
  val SCE_VHDL_DEFAULT=0
-@@ -5207,6 +5350,9 @@ evt void AutoCCompleted=2030(string text, int position, int ch, CompletionMethod
+@@ -5207,6 +5351,9 @@ evt void AutoCCompleted=2030(string text, int position, int ch, CompletionMethod
  evt void MarginRightClick=2031(int modifiers, int position, int margin)
  evt void AutoCSelectionChange=2032(int listType, string text, int position)
  

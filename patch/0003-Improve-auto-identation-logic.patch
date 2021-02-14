@@ -1,7 +1,7 @@
-From 115e3747726e5cf91069827f646c8b617cc196cd Mon Sep 17 00:00:00 2001
+From bcf69e10431401671210e346efe10ac6580a409a Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:18:10 +0300
-Subject: [PATCH 03/18] Improve auto identation logic
+Subject: [PATCH 03/17] Improve auto identation logic
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -17,10 +17,10 @@ Content-Transfer-Encoding: 8bit
 * Continue indentation with spaces or tabs based on previous line.
 
 diff --git a/PowerEditor/src/Notepad_plus.cpp b/PowerEditor/src/Notepad_plus.cpp
-index ba46b2bd..41a42fae 100644
+index 593c1419..1e2b99a9 100644
 --- a/PowerEditor/src/Notepad_plus.cpp
 +++ b/PowerEditor/src/Notepad_plus.cpp
-@@ -2596,168 +2596,83 @@ int Notepad_plus::findMachedBracePos(size_t startPos, size_t endPos, char target
+@@ -2601,173 +2601,83 @@ int Notepad_plus::findMachedBracePos(size_t startPos, size_t endPos, char target
  
  void Notepad_plus::maintainIndentation(TCHAR ch)
  {
@@ -38,7 +38,7 @@ index ba46b2bd..41a42fae 100644
 -		return;
 -
 -	if (type == L_C || type == L_CPP || type == L_JAVA || type == L_CS || type == L_OBJC ||
--		type == L_PHP || type == L_JS || type == L_JAVASCRIPT || type == L_JSP || type == L_CSS)
+-		type == L_PHP || type == L_JS || type == L_JAVASCRIPT || type == L_JSP || type == L_CSS || type == L_PERL || type == L_RUST)
 -	{
 -		if (((eolMode == SC_EOL_CRLF || eolMode == SC_EOL_LF) && ch == '\n') ||
 -			(eolMode == SC_EOL_CR && ch == '\r'))
@@ -77,6 +77,11 @@ index ba46b2bd..41a42fae 100644
 -				_pEditView->setLineIndent(curLine, indentAmountPrevLine + tabWidth);
 -			}
 -			else if (nextChar == '{')
+-			{
+-				_pEditView->setLineIndent(curLine, indentAmountPrevLine);
+-			}
+-			// These languages do no support single line control structures without braces.
+-			else if (type == L_PERL || type == L_RUST)
 -			{
 -				_pEditView->setLineIndent(curLine, indentAmountPrevLine);
 -			}

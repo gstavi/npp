@@ -1,7 +1,7 @@
-From 0dfc47f7e388caf007f1a6bb47a6c7f975738cca Mon Sep 17 00:00:00 2001
+From 091a08eb612842f2def23e58c74be43a9a886a38 Mon Sep 17 00:00:00 2001
 From: gstavi <gstavi@users.noreply.github.com>
 Date: Mon, 2 Jan 2017 10:50:21 +0200
-Subject: [PATCH 15/18] Destroy task list on losing focus
+Subject: [PATCH 14/17] Destroy task list on losing focus
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
 To prevent "hanging" task list.
 
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.cpp b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
-index 78cc3e84..109b7af9 100644
+index 90548829..0cef6bc8 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskList.cpp
 +++ b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
 @@ -491,6 +491,10 @@ LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -29,7 +29,7 @@ index 78cc3e84..109b7af9 100644
  		}
  
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
-index 937feaa9..c298986b 100644
+index e08eb56f..096dbcf8 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
 +++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
 @@ -104,6 +104,10 @@ INT_PTR CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lP

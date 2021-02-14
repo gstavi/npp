@@ -1,7 +1,7 @@
-From cf9fdbc2d204923c789f73b21f3b51421765b5eb Mon Sep 17 00:00:00 2001
+From 1b5d849c180a81bfcab564344e11b007cb6f0f8e Mon Sep 17 00:00:00 2001
 From: Gur Stavi <gustavi@microsoft.com>
 Date: Sat, 1 Feb 2020 22:27:42 +0200
-Subject: [PATCH 17/18] disable signature testing
+Subject: [PATCH 16/17] disable signature testing
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/MISC/Common/verifySignedfile.cpp b/PowerEditor/src/MISC/Common/verifySignedfile.cpp
-index 258ebc9d..ae41d6bc 100644
+index c9de4699..a0ba7d4f 100644
 --- a/PowerEditor/src/MISC/Common/verifySignedfile.cpp
 +++ b/PowerEditor/src/MISC/Common/verifySignedfile.cpp
 @@ -62,21 +62,7 @@ SecurityGard::SecurityGard()

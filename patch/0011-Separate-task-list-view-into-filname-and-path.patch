@@ -1,7 +1,7 @@
-From c2562ed4f0e2be3481334a65cc26061853c42bba Mon Sep 17 00:00:00 2001
+From c256df051d422bc4030a781958686a2dcf30be65 Mon Sep 17 00:00:00 2001
 From: gstavi <gstavi@users.noreply.github.com>
 Date: Mon, 6 Jun 2016 09:38:10 +0300
-Subject: [PATCH 12/18] Separate task list view into filname and path
+Subject: [PATCH 11/17] Separate task list view into filname and path
 MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="------------2.30.0"
 
@@ -15,7 +15,7 @@ Content-Transfer-Encoding: 8bit
 * Enlarge font.
 
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.cpp b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
-index 544d0276..78cc3e84 100644
+index acca451d..90548829 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskList.cpp
 +++ b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
 @@ -27,40 +27,40 @@
@@ -376,6 +376,11 @@ index 544d0276..78cc3e84 100644
 -	_rc = { 0, 0, 0, 0 };
 -	TCHAR buf[MAX_PATH];
 +	DWORD approxRect;
++
++	ListView_SetColumnWidth(_hSelf, TL_COLUMN_FILENAME,
++		column_width[TL_COLUMN_FILENAME] + 30);
++	ListView_SetColumnWidth(_hSelf, TL_COLUMN_PATH,
++		column_width[TL_COLUMN_PATH] + 30);
  
 -	for (int i = 0 ; i < _nbItem ; ++i)
 -	{
@@ -389,11 +394,6 @@ index 544d0276..78cc3e84 100644
 -	ListView_SetColumnWidth(_hSelf, 0, _rc.right);
 -	winVer ver = (NppParameters::getInstance())->getWinVersion();
 -	::SendMessage(_hSelf, WM_SETFONT, reinterpret_cast<WPARAM>(_hFont), 0);
-+	ListView_SetColumnWidth(_hSelf, TL_COLUMN_FILENAME,
-+		column_width[TL_COLUMN_FILENAME] + 30);
-+	ListView_SetColumnWidth(_hSelf, TL_COLUMN_PATH,
-+		column_width[TL_COLUMN_PATH] + 30);
-+
  	approxRect = ::SendMessage(_hSelf, LVM_APPROXIMATEVIEWRECT, (WPARAM)-1, (LPARAM)-1);
 +
 +	_rc.left = 0;
@@ -454,7 +454,7 @@ index 544d0276..78cc3e84 100644
  		case WM_GETDLGCODE :
  		{
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.h b/PowerEditor/src/WinControls/TaskList/TaskList.h
-index 33340e74..a8c81938 100644
+index f6c84024..333258d4 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskList.h
 +++ b/PowerEditor/src/WinControls/TaskList/TaskList.h
 @@ -7,10 +7,10 @@
@@ -503,7 +503,7 @@ index 33340e74..a8c81938 100644
  };
  
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
-index d22418e6..937feaa9 100644
+index 8f67c4b8..e08eb56f 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
 +++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
 @@ -7,10 +7,10 @@
@@ -602,7 +602,7 @@ index d22418e6..937feaa9 100644
 -	::DrawText(hDC, label, lstrlen(label), &rect, DT_SINGLELINE | DT_VCENTER | DT_LEFT);
 -}
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.h b/PowerEditor/src/WinControls/TaskList/TaskListDlg.h
-index ea63c32a..4fc3f8d9 100644
+index 5b8aaba4..a05fe520 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.h
 +++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.h
 @@ -81,7 +81,6 @@ private :
