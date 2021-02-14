@@ -1,39 +1,39 @@
-From df818b48610c8679c629e9fb7a6ab1ca7ada8c1c Mon Sep 17 00:00:00 2001
+From ff727edca6de7710d6c035249434fa48dc6ecb66 Mon Sep 17 00:00:00 2001
 From: gstavi <gstavi@users.noreply.github.com>
 Date: Thu, 2 Jun 2016 11:09:44 +0300
-Subject: [PATCH 11/12] Adjust task list for wine
+Subject: [PATCH 11/18] Adjust task list for wine
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/NppCommands.cpp b/PowerEditor/src/NppCommands.cpp
-index c648a36..1c404f0 100644
+index d43ed45c..c2ff86ff 100644
 --- a/PowerEditor/src/NppCommands.cpp
 +++ b/PowerEditor/src/NppCommands.cpp
-@@ -2371,10 +2371,13 @@ void Notepad_plus::command(int id)
- 				}
- 				else
- 				{		
-+					int iconDpiDynamicalSize = NppParameters::getInstance()->_dpiManager.scaleY(_toReduceTabBar?12:18);
- 					TaskListDlg tld;
-+					_docTabIconList.setIconSize(13);
- 					HIMAGELIST hImgLst = _docTabIconList.getHandle();
- 					tld.init(_pPublicInterface->getHinst(), _pPublicInterface->getHSelf(), hImgLst, direction);
- 					tld.doDialog();
-+					_docTabIconList.setIconSize(iconDpiDynamicalSize);
+@@ -3075,10 +3075,13 @@ void Notepad_plus::command(int id)
+ 				{
+ 					if (TaskListDlg::_instanceCount == 0)
+ 					{
++						int iconDpiDynamicalSize = NppParameters::getInstance()._dpiManager.scaleY(_toReduceTabBar?12:18);
+ 						TaskListDlg tld;
++						_docTabIconList.setIconSize(15);
+ 						HIMAGELIST hImgLst = _docTabIconList.getHandle();
+ 						tld.init(_pPublicInterface->getHinst(), _pPublicInterface->getHSelf(), hImgLst, direction);
+ 						tld.doDialog();
++						_docTabIconList.setIconSize(iconDpiDynamicalSize);
+ 					}
  				}
  			}
- 			_linkTriggered = true;
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.cpp b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
-index 0006583..67ed1ef 100644
+index c648a61a..544d0276 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskList.cpp
 +++ b/PowerEditor/src/WinControls/TaskList/TaskList.cpp
-@@ -50,7 +50,7 @@ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem
+@@ -49,7 +49,7 @@ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem
      
      // Create the list-view window in report view with label editing enabled.
  	int listViewStyles = LVS_REPORT | LVS_OWNERDATA | LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER\
@@ -42,7 +42,7 @@ index 0006583..67ed1ef 100644
  						| LVS_SHAREIMAGELISTS/* | WS_BORDER*/;
  
  	_hSelf = ::CreateWindow(WC_LISTVIEW, 
-@@ -89,6 +89,7 @@ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem
+@@ -88,6 +88,7 @@ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem
  
  	ListView_SetItemState(_hSelf, _currentIndex, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
  	ListView_SetBkColor(_hSelf, lightYellow);
@@ -50,44 +50,39 @@ index 0006583..67ed1ef 100644
  }
  
  void TaskList::destroy()
-@@ -106,9 +107,10 @@ RECT TaskList::adjustSize()
- 	RECT rc;
- 	ListView_GetItemRect(_hSelf, 0, &rc, LVIR_ICON);
- 	const int imgWidth = rc.right - rc.left;
--	const int leftMarge = 30;
-+	const int leftMarge = 10;
- 	const int xpBottomMarge = 5;
--	const int w7BottomMarge = 15;
-+	const int w7BottomMarge = 5;
-+	DWORD approxRect;
+@@ -114,28 +115,32 @@ RECT TaskList::adjustSize()
  
- 	// Temporary set "selected" font to get the worst case widths
- 	::SendMessage(_hSelf, WM_SETFONT, reinterpret_cast<WPARAM>(_hFontSelected), 0);
-@@ -116,7 +118,6 @@ RECT TaskList::adjustSize()
- 
- 	_rc.left = 0;
- 	_rc.top = 0;
--	_rc.bottom = 0;
+ 	_rc = { 0, 0, 0, 0 };
+ 	TCHAR buf[MAX_PATH];
++
  	for (int i = 0 ; i < _nbItem ; ++i)
  	{
- 		TCHAR buf[MAX_PATH];
-@@ -124,15 +125,24 @@ RECT TaskList::adjustSize()
+ 		ListView_GetItemText(_hSelf, i, 0, buf, MAX_PATH);
  		int width = ListView_GetStringWidth(_hSelf, buf);
  		if (width > maxwidth)
  			maxwidth = width;
 -		_rc.bottom += rc.bottom - rc.top;
  	}
+ 
  	_rc.right = maxwidth + imgWidth + leftMarge;
  	ListView_SetColumnWidth(_hSelf, 0, _rc.right);
 -	::SendMessage(_hSelf, WM_SETFONT, reinterpret_cast<WPARAM>(_hFont), 0);
 -
+-	//if the tasklist exceeds the height of the display, leave some space at the bottom
+-	if (_rc.bottom > ::GetSystemMetrics(SM_CYSCREEN) - 120)
+-	{
+-		_rc.bottom = ::GetSystemMetrics(SM_CYSCREEN) - 120;
+-	}
 -	reSizeTo(_rc);
- 	winVer ver = (NppParameters::getInstance())->getWinVersion();
+-
+-	// Task List's border is 1px smaller than ::GetSystemMetrics(SM_CYFRAME) returns
+-	_rc.bottom += (::GetSystemMetrics(SM_CYFRAME) - 1) * 2;
++	winVer ver = (NppParameters::getInstance())->getWinVersion();
 +	::SendMessage(_hSelf, WM_SETFONT, reinterpret_cast<WPARAM>(_hFont), 0);
-+	approxRect = ::SendMessage(_hSelf, LVM_APPROXIMATEVIEWRECT, -1, -1);
++	approxRect = ::SendMessage(_hSelf, LVM_APPROXIMATEVIEWRECT, (WPARAM)-1, (LPARAM)-1);
 +	_rc.right = LOWORD(approxRect);
 +	_rc.bottom = HIWORD(approxRect);
- 	_rc.bottom += (ver <= WV_XP && ver != WV_UNKNOWN)?xpBottomMarge:w7BottomMarge;
++	_rc.bottom += (ver <= WV_XP && ver != WV_UNKNOWN)? 5: 15;
 +	::ShowScrollBar(_hSelf, SB_HORZ, FALSE);
 +	if (_rc.bottom < 512) {
 +		::ShowScrollBar(_hSelf, SB_VERT, FALSE);
@@ -100,7 +95,7 @@ index 0006583..67ed1ef 100644
  	return _rc;
  }
  
-@@ -173,6 +183,22 @@ int TaskList::updateCurrentIndex()
+@@ -176,6 +181,22 @@ int TaskList::updateCurrentIndex()
  	return _currentIndex;
  }
  
@@ -123,11 +118,11 @@ index 0006583..67ed1ef 100644
  LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
  {
  	switch (Message)
-@@ -191,33 +217,11 @@ LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+@@ -194,33 +215,11 @@ LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
  			short zDelta = (short) HIWORD(wParam);
  			if (zDelta > 0)
  			{
--				size_t selected = (_currentIndex - 1) < 0 ? (_nbItem - 1) : (_currentIndex - 1);
+-				int32_t selected = (_currentIndex - 1) < 0 ? (_nbItem - 1) : (_currentIndex - 1);
 -				ListView_SetItemState(_hSelf, _currentIndex, 0, LVIS_SELECTED|LVIS_FOCUSED);
 -				// tells what item(s) to be repainted
 -				ListView_RedrawItems(_hSelf, _currentIndex, _currentIndex);
@@ -143,7 +138,7 @@ index 0006583..67ed1ef 100644
  			}
  			else
  			{
--				size_t selected = (_currentIndex + 1) > (_nbItem - 1) ? 0 : (_currentIndex + 1);
+-				int32_t selected = (_currentIndex + 1) > (_nbItem - 1) ? 0 : (_currentIndex + 1);
 -				ListView_SetItemState(_hSelf, _currentIndex, 0, LVIS_SELECTED|LVIS_FOCUSED);
 -				// tells what item(s) to be repainted
 -				ListView_RedrawItems(_hSelf, _currentIndex, _currentIndex);
@@ -153,13 +148,13 @@ index 0006583..67ed1ef 100644
 -				// tells what item(s) to be repainted
 -				ListView_RedrawItems(_hSelf, selected, selected);
 -				// repaint item(s)
--				UpdateWindow(_hSelf);              
+-				UpdateWindow(_hSelf);
 -				_currentIndex = selected;
 +				moveSelection(1);
  			}
+ 			ListView_EnsureVisible(_hSelf, _currentIndex, true);
  			return TRUE;
- 		}
-@@ -232,50 +236,26 @@ LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+@@ -236,51 +235,26 @@ LRESULT TaskList::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
  		{
  			MSG *msg = (MSG*)lParam;
  
@@ -187,7 +182,7 @@ index 0006583..67ed1ef 100644
 -					if (((msg->wParam == VK_TAB) && (0x80 & GetKeyState(VK_SHIFT))) ||
 -					    (msg->wParam == VK_UP))
 -					{ 
--						size_t selected = (_currentIndex - 1) < 0 ? (_nbItem - 1) : (_currentIndex - 1);
+-						int32_t selected = (_currentIndex - 1) < 0 ? (_nbItem - 1) : (_currentIndex - 1);
 -						ListView_SetItemState(_hSelf, _currentIndex, 0, LVIS_SELECTED|LVIS_FOCUSED);
 -						// tells what item(s) to be repainted
 -						ListView_RedrawItems(_hSelf, _currentIndex, _currentIndex);
@@ -203,7 +198,7 @@ index 0006583..67ed1ef 100644
 -					// VK_DOWN and VK_RIGHT do the same as VK_TAB does
 -					else if ((msg->wParam == VK_TAB) || (msg->wParam == VK_DOWN))
 -					{
--						size_t selected = (_currentIndex + 1) > (_nbItem - 1) ? 0 : (_currentIndex + 1);
+-						int32_t selected = (_currentIndex + 1) > (_nbItem - 1) ? 0 : (_currentIndex + 1);
 -						ListView_SetItemState(_hSelf, _currentIndex, 0, LVIS_SELECTED|LVIS_FOCUSED);
 -						// tells what item(s) to be repainted
 -						ListView_RedrawItems(_hSelf, _currentIndex, _currentIndex);
@@ -216,6 +211,7 @@ index 0006583..67ed1ef 100644
 -						UpdateWindow(_hSelf);              
 -						_currentIndex = selected;
 -					}
+-					ListView_EnsureVisible(_hSelf, _currentIndex, true);
 -				}
 -				else
 -				{
@@ -229,32 +225,32 @@ index 0006583..67ed1ef 100644
  
  		default :
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskList.h b/PowerEditor/src/WinControls/TaskList/TaskList.h
-index 9645823..72e05ec 100644
+index 89c4e9c5..33340e74 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskList.h
 +++ b/PowerEditor/src/WinControls/TaskList/TaskList.h
-@@ -61,6 +61,7 @@ protected:
+@@ -64,6 +64,7 @@ protected:
  
  	WNDPROC _defaultProc;
  	LRESULT runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 +	void moveSelection(int delta);
  
  	static LRESULT CALLBACK staticProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
- 		return (((TaskList *)(::GetWindowLongPtr(hwnd, GWL_USERDATA)))->runProc(hwnd, Message, wParam, lParam));
+ 		return (((TaskList *)(::GetWindowLongPtr(hwnd, GWLP_USERDATA)))->runProc(hwnd, Message, wParam, lParam));
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
-index 67dda3c..bf24f10 100644
+index c94a187d..d22418e6 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
 +++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.cpp
-@@ -72,7 +72,7 @@ BOOL CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lPara
+@@ -85,7 +85,7 @@ INT_PTR CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lP
  				i2set = 0;
  
  			_taskList.init(_hInst, _hSelf, _hImalist, nbTotal, i2set);
--			_taskList.setFont(TEXT("Verdana"), 14);
-+			_taskList.setFont(TEXT("Verdana"), -14);
+-			_taskList.setFont(TEXT("Verdana"), NppParameters::getInstance()._dpiManager.scaleY(14));
++			_taskList.setFont(TEXT("Verdana"), NppParameters::getInstance()._dpiManager.scaleY(-16));
  			_rc = _taskList.adjustSize();
  
  			reSizeTo(_rc);
 diff --git a/PowerEditor/src/WinControls/TaskList/TaskListDlg.rc b/PowerEditor/src/WinControls/TaskList/TaskListDlg.rc
-index b67597c..b26d33c 100644
+index b67597ca..d164b72c 100644
 --- a/PowerEditor/src/WinControls/TaskList/TaskListDlg.rc
 +++ b/PowerEditor/src/WinControls/TaskList/TaskListDlg.rc
 @@ -30,7 +30,7 @@
@@ -267,6 +263,6 @@ index b67597c..b26d33c 100644
  BEGIN
  END
 
---------------2.5.3--
+--------------2.30.0--
 
 

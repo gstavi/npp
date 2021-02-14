@@ -1,21 +1,21 @@
-From 1c4e53fa7051c213678ed6f0a48b0bcdc99f0af8 Mon Sep 17 00:00:00 2001
+From 4c1b6c2514e83496076462ed0664e57aca558aec Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:27:50 +0300
-Subject: [PATCH 07/12] speedup test for modified files
+Subject: [PATCH 07/18] speedup test for modified files
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Parameters.cpp b/PowerEditor/src/Parameters.cpp
-index 23a07eb..5493a37 100644
+index d7bed691..7c85e753 100644
 --- a/PowerEditor/src/Parameters.cpp
 +++ b/PowerEditor/src/Parameters.cpp
-@@ -6387,7 +6387,25 @@ void NppParameters::addScintillaModifiedIndex(int index)
+@@ -6744,7 +6744,25 @@ void NppParameters::addScintillaModifiedIndex(int index)
  
  void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirection)
  {
@@ -42,7 +42,7 @@ index 23a07eb..5493a37 100644
  	if (kernel)
  	{
  		BOOL isWow64 = FALSE;
-@@ -6400,8 +6418,7 @@ void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirect
+@@ -6757,8 +6775,7 @@ void NppParameters::safeWow64EnableWow64FsRedirection(BOOL Wow64FsEnableRedirect
  
  			if (isWow64)
  			{
@@ -53,29 +53,46 @@ index 23a07eb..5493a37 100644
  				{
  					Wow64EnableWow64FsRedirectionFunc(Wow64FsEnableRedirection);
 diff --git a/PowerEditor/src/ScitillaComponent/Buffer.cpp b/PowerEditor/src/ScitillaComponent/Buffer.cpp
-index a418be1..5de6c4c 100644
+index 980c0159..2d325867 100644
 --- a/PowerEditor/src/ScitillaComponent/Buffer.cpp
 +++ b/PowerEditor/src/ScitillaComponent/Buffer.cpp
-@@ -156,7 +156,17 @@ void Buffer::setFileName(const TCHAR *fn, LangType defaultLang)
- bool Buffer::checkFileState() {	//returns true if the status has been changed (it can change into DOC_REGULAR too). false otherwise
- 	struct _stat buf;
+@@ -221,13 +221,24 @@ void Buffer::setFileName(const TCHAR *fn, LangType defaultLang)
  
-- 	if (_currentStatus == DOC_UNNAMED)	//unsaved document cannot change by environment
+ bool Buffer::checkFileState() // returns true if the status has been changed (it can change into DOC_REGULAR too). false otherwise
+ {
++	WIN32_FILE_ATTRIBUTE_DATA attributes;
++
 +	/* Gur: speed optimization.
 +	 * Optimistic approach - try to finish as quickly as possible */
 +	if (_currentStatus == DOC_REGULAR)
 +	{
-+		int err;
-+		err = generic_stat(_fullPathName.c_str(), &buf);
-+		if (!err && _timeStamp == buf.st_mtime)
++		BOOL res;
++		res = GetFileAttributesEx(_fullPathName.c_str(), GetFileExInfoStandard, &attributes);
++		if (res != 0 && CompareFileTime(&_timeStamp, &attributes.ftLastWriteTime) == 0)
 +			return false;
 +	}
 +
-+	if (_currentStatus == DOC_UNNAMED)	//unsaved document cannot change by environment
+ 	// 1. Unsaved document cannot change by environment
+ 	// 2. Monitoring is sent by NPPM_INTERNAL_RELOADSCROLLTOEND
+ 	// So no need to check file status for both the above cases
+ 	if (_currentStatus == DOC_UNNAMED || isMonitoringOn())
  		return false;
  
+-	WIN32_FILE_ATTRIBUTE_DATA attributes;
  	bool isWow64Off = false;
+ 	NppParameters& nppParam = NppParameters::getInstance();
+ 
+@@ -514,6 +525,9 @@ void FileManager::checkFilesystemChanges(bool bCheckOnlyCurrentBuffer)
+ {
+ 	if (bCheckOnlyCurrentBuffer)
+ 	{
++		if (_pNotepadPlus == NULL) {
++			return;
++		}
+ 		Buffer* buffer = _pNotepadPlus->getCurrentBuffer();
+ 		buffer->checkFileState();
+ 	}
 
---------------2.5.3--
+--------------2.30.0--
 
 

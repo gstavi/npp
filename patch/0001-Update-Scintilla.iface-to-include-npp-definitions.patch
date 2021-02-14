@@ -1,21 +1,21 @@
-From 053e060ac544a92ecab930e1ddc54e99abf80d72 Mon Sep 17 00:00:00 2001
+From 37035a6e154973361dc8a14d5328be9a9e5a93b7 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 17:12:04 +0300
-Subject: [PATCH 01/12] Update Scintilla.iface to include npp definitions
+Subject: [PATCH 01/18] Update Scintilla.iface to include npp definitions
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/scintilla/include/Scintilla.iface b/scintilla/include/Scintilla.iface
-index 63657f3..449d1d5 100644
+index c154687e..96dc5814 100644
 --- a/scintilla/include/Scintilla.iface
 +++ b/scintilla/include/Scintilla.iface
-@@ -2352,7 +2352,7 @@ fun void Colourise=4003(position start, position end)
+@@ -2807,7 +2807,7 @@ fun void Colourise=4003(position start, position end)
  set void SetProperty=4004(string key, string value)
  
  # Maximum value of keywordSet parameter of SetKeyWords.
@@ -23,24 +23,24 @@ index 63657f3..449d1d5 100644
 +val KEYWORDSET_MAX=30
  
  # Set up the key words used by the lexer.
- set void SetKeyWords=4005(int keywordSet, string keyWords)
-@@ -2427,6 +2427,7 @@ val SC_MOD_CHANGEANNOTATION=0x20000
- val SC_MOD_CONTAINER=0x40000
- val SC_MOD_LEXERSTATE=0x80000
- val SC_MODEVENTMASKALL=0xFFFFF
+ set void SetKeyWords=4005(int keyWordSet, string keyWords)
+@@ -2936,6 +2936,7 @@ val SC_MOD_LEXERSTATE=0x80000
+ val SC_MOD_INSERTCHECK=0x100000
+ val SC_MOD_CHANGETABSTOPS=0x200000
+ val SC_MODEVENTMASKALL=0x3FFFFF
 +val SC_SEARCHRESULT_LINEBUFFERMAXLENGTH=1024
  
- enu Update=SC_UPDATE_
- val SC_UPDATE_CONTENT=0x1
-@@ -2587,10 +2588,25 @@ val SCLEX_OSCRIPT=106
- val SCLEX_VISUALPROLOG=107
- val SCLEX_LITERATEHASKELL=108
- val SCLEX_STTXT=109
+ ali SC_MOD_INSERTTEXT=INSERT_TEXT
+ ali SC_MOD_DELETETEXT=DELETE_TEXT
+@@ -3157,10 +3158,24 @@ val SCLEX_NIM=126
+ val SCLEX_CIL=127
+ val SCLEX_X12=128
+ val SCLEX_DATAFLEX=129
+-
 +val SCLEX_SEARCHRESULT=150
 +val SCLEX_OBJC=151
 +val SCLEX_USER=152
 +
- 
  # When a lexer specifies its language as SCLEX_AUTOMATIC it receives a
  # value assigned in sequence from SCLEX_AUTOMATIC+1.
  val SCLEX_AUTOMATIC=1000
@@ -58,7 +58,7 @@ index 63657f3..449d1d5 100644
  # Lexical states for SCLEX_PYTHON
  lex Python=SCLEX_PYTHON SCE_P_
  lex Nimrod=SCLEX_NIMROD SCE_P_
-@@ -2663,6 +2679,114 @@ val SCE_D_STRINGR=19
+@@ -3247,6 +3262,114 @@ val SCE_D_STRINGR=19
  val SCE_D_WORD5=20
  val SCE_D_WORD6=21
  val SCE_D_WORD7=22
@@ -173,7 +173,7 @@ index 63657f3..449d1d5 100644
  # Lexical states for SCLEX_TCL
  lex TCL=SCLEX_TCL SCE_TCL_
  val SCE_TCL_DEFAULT=0
-@@ -3023,7 +3147,21 @@ val SCE_MAKE_PREPROCESSOR=2
+@@ -3630,7 +3753,21 @@ val SCE_MAKE_PREPROCESSOR=2
  val SCE_MAKE_IDENTIFIER=3
  val SCE_MAKE_OPERATOR=4
  val SCE_MAKE_TARGET=5
@@ -195,7 +195,7 @@ index 63657f3..449d1d5 100644
  # Lexical states for SCLEX_DIFF
  lex Diff=SCLEX_DIFF SCE_DIFF_
  val SCE_DIFF_DEFAULT=0
-@@ -3566,6 +3704,12 @@ val SCE_ASN1_ATTRIBUTE=7
+@@ -4208,6 +4345,12 @@ val SCE_ASN1_ATTRIBUTE=7
  val SCE_ASN1_DESCRIPTOR=8
  val SCE_ASN1_TYPE=9
  val SCE_ASN1_OPERATOR=10
@@ -208,18 +208,17 @@ index 63657f3..449d1d5 100644
  # Lexical states for SCLEX_VHDL
  lex VHDL=SCLEX_VHDL SCE_VHDL_
  val SCE_VHDL_DEFAULT=0
-@@ -4388,6 +4532,10 @@ get int DistanceToSecondaryStyles=4025(,)
- # Get the set of base styles that can be extended with sub styles
- get int GetSubStyleBases=4026(, stringresult styles)
+@@ -5207,6 +5350,9 @@ evt void AutoCCompleted=2030(string text, int position, int ch, CompletionMethod
+ evt void MarginRightClick=2031(int modifiers, int position, int margin)
+ evt void AutoCSelectionChange=2032(int listType, string text, int position)
  
 +evt void Scrolled=2080(void)
-+
 +evt void FoldingStateChanged=2081(void)
 +
- cat Deprecated
+ cat Provisional
  
- # Deprecated in 2.21
+ enu Bidirectional=SC_BIDIRECTIONAL_
 
---------------2.5.3--
+--------------2.30.0--
 
 

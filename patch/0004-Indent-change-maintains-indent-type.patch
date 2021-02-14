@@ -1,12 +1,12 @@
-From 1dda09f999366b32dc8779492b2fcf7a7db978d6 Mon Sep 17 00:00:00 2001
+From 0180c0967c93e224900e86bb9f918c191207fc5b Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:20:26 +0300
-Subject: [PATCH 04/12] Indent change maintains indent type
+Subject: [PATCH 04/18] Indent change maintains indent type
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
@@ -16,10 +16,10 @@ Content-Transfer-Encoding: 8bit
   the global type.
 
 diff --git a/scintilla/src/Document.cxx b/scintilla/src/Document.cxx
-index 64f6b46..4c6a383 100644
+index 48f3b568..3556689c 100644
 --- a/scintilla/src/Document.cxx
 +++ b/scintilla/src/Document.cxx
-@@ -1174,12 +1174,54 @@ int SCI_METHOD Document::GetLineIndentation(int line) {
+@@ -1487,12 +1487,53 @@ int SCI_METHOD Document::GetLineIndentation(Sci_Position line) {
  	return indent;
  }
  
@@ -28,7 +28,7 @@ index 64f6b46..4c6a383 100644
 + * Line starts with space worth of tab -> use spaces
 + * Else -> Decide based on line above.
 + * After 8 lines use configuration mode. */
-+bool Document::LineIndentWithTabs(int line) const {
++bool Document::LineIndentWithTabs(Sci::Line line) const {
 +	int up_line, max_up_line, lineStart, i, docLength;
 +	char ch;
 +
@@ -59,8 +59,8 @@ index 64f6b46..4c6a383 100644
 +	return useTabs;
 +}
 +
- void Document::SetLineIndentation(int line, int indent) {
- 	int indentOfLine = GetLineIndentation(line);
+ Sci::Position Document::SetLineIndentation(Sci::Line line, Sci::Position indent) {
+ 	const int indentOfLine = GetLineIndentation(line);
  	if (indent < 0)
  		indent = 0;
  	if (indent != indentOfLine) {
@@ -69,25 +69,24 @@ index 64f6b46..4c6a383 100644
 +		 * Gur: When changing indentation use tab or space based on the current
 +		 * indentation of the line and not the global mode.
 +		 */
-+		int lineStart = LineStart(line);
 +		bool effUseTabs = LineIndentWithTabs(line);
 +		std::string linebuf = CreateIndentation(indent, tabInChars, !effUseTabs);
- 		int thisLineStart = LineStart(line);
- 		int indentPos = GetLineIndentPosition(line);
+ 		const Sci::Position thisLineStart = LineStart(line);
+ 		const Sci::Position indentPos = GetLineIndentPosition(line);
  		UndoGroup ug(this);
 diff --git a/scintilla/src/Document.h b/scintilla/src/Document.h
-index 94e288e..3059394 100644
+index 529045d7..adda6905 100644
 --- a/scintilla/src/Document.h
 +++ b/scintilla/src/Document.h
-@@ -293,6 +293,7 @@ public:
- 	int GapPosition() const { return cb.GapPosition(); }
+@@ -369,6 +369,7 @@ public:
+ 	Sci::Position GapPosition() const noexcept { return cb.GapPosition(); }
  
- 	int SCI_METHOD GetLineIndentation(int line);
-+	bool LineIndentWithTabs(int line) const;
- 	void SetLineIndentation(int line, int indent);
- 	int GetLineIndentPosition(int line) const;
- 	int GetColumn(int position);
+ 	int SCI_METHOD GetLineIndentation(Sci_Position line) override;
++	bool LineIndentWithTabs(Sci::Line line) const;
+ 	Sci::Position SetLineIndentation(Sci::Line line, Sci::Position indent);
+ 	Sci::Position GetLineIndentPosition(Sci::Line line) const;
+ 	Sci::Position GetColumn(Sci::Position pos);
 
---------------2.5.3--
+--------------2.30.0--
 
 

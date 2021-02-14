@@ -1,0 +1,32 @@
+From 83552506e8e1ec35de39b591913ba4672b5c1494 Mon Sep 17 00:00:00 2001
+From: Gur Stavi <gustavi@microsoft.com>
+Date: Sun, 2 Feb 2020 12:38:01 +0200
+Subject: [PATCH 16/18] Fix: don't truncate get value window
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------2.30.0"
+
+This is a multi-part message in MIME format.
+--------------2.30.0
+Content-Type: text/plain; charset=UTF-8; format=fixed
+Content-Transfer-Encoding: 8bit
+
+
+Used for getting tab size or vertical line offset.
+
+diff --git a/PowerEditor/src/lesDlgs.cpp b/PowerEditor/src/lesDlgs.cpp
+index 3c087a5f..11f13136 100644
+--- a/PowerEditor/src/lesDlgs.cpp
++++ b/PowerEditor/src/lesDlgs.cpp
+@@ -89,7 +89,7 @@ INT_PTR CALLBACK ValueDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM)
+ 			::SetDlgItemInt(_hSelf, IDC_VALUE_EDIT, _defaultValue, FALSE);
+ 
+ 			RECT rc;
+-			::GetClientRect(_hSelf, &rc);
++			::GetWindowRect(_hSelf, &rc);
+ 			int size = reSizeValueBox();
+ 			::MoveWindow(_hSelf, _p.x, _p.y, rc.right - rc.left + size, rc.bottom - rc.top + 30, TRUE);
+ 			
+
+--------------2.30.0--
+
+

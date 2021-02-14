@@ -1,21 +1,21 @@
-From ac6671462f18bf242a30ce38a7cb094f99fa898f Mon Sep 17 00:00:00 2001
+From e88f2f68aa9446ef8c294ec87f59e04e4e6f55c6 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 15:58:55 +0300
-Subject: [PATCH 02/12] better handling for matching braces
+Subject: [PATCH 02/18] better handling for matching braces
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Notepad_plus.cpp b/PowerEditor/src/Notepad_plus.cpp
-index d1ba610..79d290e 100644
+index b1b7f9b9..ba46b2bd 100644
 --- a/PowerEditor/src/Notepad_plus.cpp
 +++ b/PowerEditor/src/Notepad_plus.cpp
-@@ -2046,29 +2046,27 @@ void Notepad_plus::findMatchingBracePos(int & braceAtCaret, int & braceOpposite)
+@@ -2299,29 +2299,27 @@ void Notepad_plus::findMatchingBracePos(int & braceAtCaret, int & braceOpposite)
  	int caretPos = int(_pEditView->execute(SCI_GETCURRENTPOS));
  	braceAtCaret = -1;
  	braceOpposite = -1;
@@ -62,6 +62,6 @@ index d1ba610..79d290e 100644
  		braceOpposite = int(_pEditView->execute(SCI_BRACEMATCH, braceAtCaret, 0));
  }
 
---------------2.5.3--
+--------------2.30.0--
 
 

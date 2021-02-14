@@ -1,30 +1,30 @@
-From e00dba01f0d03ff65af59189266aa0ce570e57a3 Mon Sep 17 00:00:00 2001
+From 5795db5b06cbac351c3a62f1171659cb895e68d1 Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:24:41 +0300
-Subject: [PATCH 06/12] Use new icon
+Subject: [PATCH 06/18] Use new icon
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Notepad_plus.rc b/PowerEditor/src/Notepad_plus.rc
-index a118459..2ec0fd1 100644
+index c19d17ed..df7b4436 100644
 --- a/PowerEditor/src/Notepad_plus.rc
 +++ b/PowerEditor/src/Notepad_plus.rc
 @@ -61,7 +61,7 @@ END
  
  // Icon with lowest ID value placed first to ensure application icon
  // remains consistent on all systems.
--IDI_M30ICON                     ICON      "icons\\npp.ico"
-+IDI_M30ICON                     ICON      "icons\\nppNewIcon.ico"
- IDI_CHAMELEON                   ICON      "icons\\chameleon.ico"
- //IDI_JESUISCHARLIE               ICON      "icons\\Je_suis_Charlie.ico"
- IDI_NEW_OFF_ICON                ICON      "icons\\new_off.ico"
+-IDI_M30ICON                     ICON      "icons/npp.ico"
++IDI_M30ICON                     ICON      "icons/nppNewIcon.ico"
+ IDI_CHAMELEON                   ICON      "icons/chameleon.ico"
+ //IDI_JESUISCHARLIE               ICON      "icons/Je_suis_Charlie.ico"
+ //IDI_GILETJAUNE               ICON      "icons/giletJaune.ico"
 
---------------2.5.3--
+--------------2.30.0--
 
 

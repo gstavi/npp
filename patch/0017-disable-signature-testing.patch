@@ -1,0 +1,43 @@
+From cf9fdbc2d204923c789f73b21f3b51421765b5eb Mon Sep 17 00:00:00 2001
+From: Gur Stavi <gustavi@microsoft.com>
+Date: Sat, 1 Feb 2020 22:27:42 +0200
+Subject: [PATCH 17/18] disable signature testing
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------2.30.0"
+
+This is a multi-part message in MIME format.
+--------------2.30.0
+Content-Type: text/plain; charset=UTF-8; format=fixed
+Content-Transfer-Encoding: 8bit
+
+
+diff --git a/PowerEditor/src/MISC/Common/verifySignedfile.cpp b/PowerEditor/src/MISC/Common/verifySignedfile.cpp
+index 258ebc9d..ae41d6bc 100644
+--- a/PowerEditor/src/MISC/Common/verifySignedfile.cpp
++++ b/PowerEditor/src/MISC/Common/verifySignedfile.cpp
+@@ -62,21 +62,7 @@ SecurityGard::SecurityGard()
+ 
+ bool SecurityGard::checkModule(const std::wstring& filePath, NppModule module2check)
+ {
+-#ifndef _DEBUG
+-	if (_securityMode == sm_certif)
+-		return verifySignedLibrary(filePath, module2check);
+-	else if (_securityMode == sm_sha256)
+-		return checkSha256(filePath, module2check);
+-	else
+-		return false;
+-#else
+-	// Do not check integrity if npp is running in debug mode
+-	// This is helpful for developers to skip signature checking
+-	// while analyzing issue or modifying the lexer dll
+-	(void)filePath;
+-	(void)module2check;
+ 	return true;
+-#endif
+ }
+ 
+ bool SecurityGard::checkSha256(const std::wstring& filePath, NppModule module2check)
+
+--------------2.30.0--
+
+

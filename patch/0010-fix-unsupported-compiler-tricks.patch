@@ -1,85 +1,26 @@
-From 4dc1b9ceaf63545c1bf76d9e6616684674553923 Mon Sep 17 00:00:00 2001
+From c98db2f959d4b3c17efa21e8bca4daed24fac8ad Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Thu, 16 Jul 2015 15:26:30 +0300
-Subject: [PATCH 10/12] fix unsupported compiler tricks
+Subject: [PATCH 10/18] fix unsupported compiler tricks
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/MISC/Common/Common.cpp b/PowerEditor/src/MISC/Common/Common.cpp
-index ec16d2c..8296ecd 100644
+index 322f1653..0e794559 100644
 --- a/PowerEditor/src/MISC/Common/Common.cpp
 +++ b/PowerEditor/src/MISC/Common/Common.cpp
-@@ -780,13 +780,13 @@ long long stollStrict(const generic_string& input)
+@@ -1280,3 +1280,4 @@ void getFilesInFolder(std::vector<generic_string>& files, const generic_string&
+ 	::FindClose(hFindFile);
+ }
  
- bool allLinesAreNumericOrEmpty(const std::vector<generic_string>& lines)
- {
--	for (const generic_string& line : lines)
-+	for (auto it = lines.begin(); it != lines.end(); ++it)
- 	{
- 		try
- 		{
--			if (!line.empty())
-+			if (!it->empty())
- 			{
--				stollStrict(line);
-+				stollStrict(*it);
- 			}
- 		}
- 		catch (std::invalid_argument&)
-@@ -815,7 +815,8 @@ std::vector<generic_string> repeatString(const generic_string& text, const size_
- 
- std::vector<generic_string> lexicographicSort(std::vector<generic_string> input, bool isDescending)
- {
--	std::sort(input.begin(), input.end(), [isDescending](generic_string a, generic_string b)
-+	std::sort(input.begin(), input.end(),
-+		[isDescending](generic_string a, generic_string b) -> int
- 	{
- 		if (isDescending)
- 		{
-@@ -836,19 +837,20 @@ std::vector<generic_string> numericSort(std::vector<generic_string> input, bool
- 	std::vector<long long> nonEmptyInputAsNumbers;
- 	size_t nofEmptyLines = 0;
- 	nonEmptyInputAsNumbers.reserve(input.size());
--	for (const generic_string& line : input)
-+	for (auto it = input.begin(); it != input.end(); ++it)
- 	{
--		if (line.empty())
-+		if (it->empty())
- 		{
- 			++nofEmptyLines;
- 		}
- 		else
- 		{
--			nonEmptyInputAsNumbers.push_back(stollStrict(line));
-+			nonEmptyInputAsNumbers.push_back(stollStrict(*it));
- 		}
- 	}
- 	assert(nonEmptyInputAsNumbers.size() + nofEmptyLines == input.size());
--	std::sort(nonEmptyInputAsNumbers.begin(), nonEmptyInputAsNumbers.end(), [isDescending](long long a, long long b)
-+	std::sort(nonEmptyInputAsNumbers.begin(), nonEmptyInputAsNumbers.end(),
-+		[isDescending](long long a, long long b) -> int
- 	{
- 		if (isDescending)
- 		{
-@@ -866,9 +868,9 @@ std::vector<generic_string> numericSort(std::vector<generic_string> input, bool
- 	{
- 		output.insert(output.end(), empties.begin(), empties.end());
- 	}
--	for (const long long& sortedNumber : nonEmptyInputAsNumbers)
-+	for (auto it = nonEmptyInputAsNumbers.begin(); it != nonEmptyInputAsNumbers.end(); ++it)
- 	{
--		output.push_back(std::to_wstring(sortedNumber));
-+		output.push_back(std::to_wstring(*it));
- 	}
- 	if (isDescending)
- 	{
++
 
---------------2.5.3--
+--------------2.30.0--
 
 

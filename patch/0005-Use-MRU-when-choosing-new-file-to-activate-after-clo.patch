@@ -1,22 +1,22 @@
-From 80d962c098f17fba7ac2450cde8a1642155e11e7 Mon Sep 17 00:00:00 2001
+From fbed285d14c6588632be49d5d1088d805eb622ea Mon Sep 17 00:00:00 2001
 From: gstavi <gur.stavi@gmail.com>
 Date: Wed, 15 Jul 2015 16:23:38 +0300
-Subject: [PATCH 05/12] Use MRU when choosing new file to activate after close
+Subject: [PATCH 05/18] Use MRU when choosing new file to activate after close
  file
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------2.5.3"
+Content-Type: multipart/mixed; boundary="------------2.30.0"
 
 This is a multi-part message in MIME format.
---------------2.5.3
+--------------2.30.0
 Content-Type: text/plain; charset=UTF-8; format=fixed
 Content-Transfer-Encoding: 8bit
 
 
 diff --git a/PowerEditor/src/Notepad_plus.cpp b/PowerEditor/src/Notepad_plus.cpp
-index dc9ba79..4fe59d6 100644
+index 41a42fae..88c08880 100644
 --- a/PowerEditor/src/Notepad_plus.cpp
 +++ b/PowerEditor/src/Notepad_plus.cpp
-@@ -3159,6 +3159,27 @@ bool Notepad_plus::removeBufferFromView(BufferID id, int whichOne)
+@@ -3446,6 +3446,27 @@ bool Notepad_plus::removeBufferFromView(BufferID id, int whichOne)
  			{
  				toActivate = active;    //activate the 'active' index. Since we remove the tab first, the indices shift (on the right side)
  			}
@@ -25,7 +25,7 @@ index dc9ba79..4fe59d6 100644
 +			 * Gur: After closing a file choose the file to activate (toActivate)
 +			 * based on MRU list and not just last file in the list.
 +			 */
-+			if (NppParameters::getInstance()->getNppGUI()._styleMRU)
++			if (NppParameters::getInstance().getNppGUI()._styleMRU)
 +			{
 +				TaskListInfo taskListInfo;
 +				::SendMessage(_pPublicInterface->getHSelf(), WM_GETTASKLISTINFO,
@@ -42,9 +42,9 @@ index dc9ba79..4fe59d6 100644
 +			}
 +
  			tabToClose->deletItemAt((size_t)index); //delete first
+ 			_isFolding = true; // So we can ignore events while folding is taking place
  			activateBuffer(tabToClose->getBufferByIndex(toActivate), whichOne);     //then activate. The prevent jumpy tab behaviour
- 		}
 
---------------2.5.3--
+--------------2.30.0--
 
 
